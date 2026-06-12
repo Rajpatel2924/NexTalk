@@ -615,6 +615,20 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
             elif etype == "ping":
                 await websocket.send_text(json.dumps({"type": "pong"}))
 
+            # ---- WebRTC call signaling (1:1) ----
+            # These events are simply relayed to the target user. They are stateless on the server.
+            elif etype in ("call_offer", "call_answer", "call_ice", "call_reject", "call_end", "call_ringing"):
+                target = event.get("to")
+                if not target:
+                    continue
+                # Look up basic caller info once (cheap), to enrich call_offer
+                payload = {**event, "from": user_id}
+                if etype == "call_offer":
+                    u = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+                    if u:
+                        payload["fromUser"] = public_user(u)
+                await ws_manager.send_to_user(target, payload)
+
     except WebSocketDisconnect:
         pass
     except Exception as e:

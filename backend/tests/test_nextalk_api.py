@@ -349,3 +349,148 @@ async def test_ws_invalid_token():
         pass
     except Exception:
         pass
+
+
+# -------- WebSocket: Call signaling relay --------
+@pytest.mark.asyncio
+async def test_ws_call_signaling_relay(alice, bob):
+    """Verify call_offer/answer/ice/reject/end events relay from caller to callee with from + fromUser."""
+    alice_ws = await websockets.connect(f"{WS_URL}?token={alice['token']}")
+    bob_ws = await websockets.connect(f"{WS_URL}?token={bob['token']}")
+    try:
+        await asyncio.sleep(0.4)
+
+        async def drain(ws, timeout=0.2):
+            evts = []
+            try:
+                while True:
+                    msg = await asyncio.wait_for(ws.recv(), timeout=timeout)
+                    evts.append(json.loads(msg))
+            except asyncio.TimeoutError:
+                pass
+            return evts
+
+        await drain(alice_ws); await drain(bob_ws)
+
+        # 1) call_offer from Alice -> Bob
+        await alice_ws.send(json.dumps({
+            "type": "call_offer",
+            "to": bob["user"]["id"],
+            "callType": "audio",
+            "sdp": {"type": "offer", "sdp": "v=0..."},
+        }))
+        bob_evts = await drain(bob_ws, timeout=2.0)
+        offers = [e for e in bob_evts if e.get("type") == "call_offer"]
+        assert offers, f"Bob didn't get call_offer. Got: {bob_evts}"
+        offer = offers[0]
+        assert offer["from"] == alice["user"]["id"]
+        assert offer.get("fromUser", {}).get("id") == alice["user"]["id"]
+        assert offer["callType"] == "audio"
+
+        # Alice should NOT receive her own offer back
+        alice_echo = await drain(alice_ws, timeout=0.4)
+        assert not [e for e in alice_echo if e.get("type") == "call_offer"]
+
+        # 2) call_answer from Bob -> Alice
+        await bob_ws.send(json.dumps({
+            "type": "call_answer",
+            "to": alice["user"]["id"],
+            "sdp": {"type": "answer", "sdp": "v=0..."},
+        }))
+        alice_evts = await drain(alice_ws, timeout=2.0)
+        answers = [e for e in alice_evts if e.get("type") == "call_answer"]
+        assert answers, f"Alice didn't get call_answer. Got: {alice_evts}"
+        assert answers[0]["from"] == bob["user"]["id"]
+
+        # 3) call_ice from Alice -> Bob
+        await alice_ws.send(json.dumps({
+            "type": "call_ice",
+            "to": bob["user"]["id"],
+            "candidate": {"candidate": "candidate:1 ...", "sdpMid": "0", "sdpMLineIndex": 0},
+        }))
+        bob_evts2 = await drain(bob_ws, timeout=2.0)
+        ices = [e for e in bob_evts2 if e.get("type") == "call_ice"]
+        assert ices, f"Bob didn't get call_ice. Got: {bob_evts2}"
+        assert ices[0]["from"] == alice["user"]["id"]
+        assert ices[0]["candidate"]["sdpMid"] == "0"
+
+        # 4) call_reject from Bob -> Alice
+        await bob_ws.send(json.dumps({"type": "call_reject", "to": alice["user"]["id"]}))
+        alice_evts2 = await drain(alice_ws, timeout=2.0)
+        rejects = [e for e in alice_evts2 if e.get("type") == "call_reject"]
+        assert rejects, f"Alice didn't get call_reject. Got: {alice_evts2}"
+        assert rejects[0]["from"] == bob["user"]["id"]
+
+        # 5) call_end from Alice -> Bob
+        await alice_ws.send(json.dumps({"type": "call_end", "to": bob["user"]["id"]}))
+        bob_evts3 = await drain(bob_ws, timeout=2.0)
+        ends = [e for e in bob_evts3 if e.get("type") == "call_end"]
+        assert ends, f"Bob didn't get call_end. Got: {bob_evts3}"
+        assert ends[0]["from"] == alice["user"]["id"]
+    finally:
+        await alice_ws.close()
+        await bob_ws.close()
+
+
+@pytest.mark.asyncio
+async def test_ws_call_event_missing_to_ignored(alice, bob):
+    """Server must not crash and must ignore call events without a 'to' field."""
+    alice_ws = await websockets.connect(f"{WS_URL}?token={alice['token']}")
+    bob_ws = await websockets.connect(f"{WS_URL}?token={bob['token']}")
+    try:
+        await asyncio.sleep(0.3)
+
+        async def drain(ws, timeout=0.2):
+            evts = []
+            try:
+                while True:
+                    msg = await asyncio.wait_for(ws.recv(), timeout=timeout)
+                    evts.append(json.loads(msg))
+            except asyncio.TimeoutError:
+                pass
+            return evts
+
+        await drain(alice_ws); await drain(bob_ws)
+
+        # Send call_offer with no 'to' - should be silently ignored, no crash
+        await alice_ws.send(json.dumps({"type": "call_offer", "sdp": {"type": "offer", "sdp": "x"}}))
+        await asyncio.sleep(0.3)
+
+        # Confirm connection still alive: send a ping and expect pong
+        await alice_ws.send(json.dumps({"type": "ping"}))
+        evts = await drain(alice_ws, timeout=1.5)
+        assert any(e.get("type") == "pong" for e in evts), f"WS dead after malformed call event: {evts}"
+        # Bob got nothing
+        bob_evts = await drain(bob_ws, timeout=0.3)
+        assert not [e for e in bob_evts if str(e.get("type", "")).startswith("call_")]
+    finally:
+        await alice_ws.close()
+        await bob_ws.close()
+
+
+@pytest.mark.asyncio
+async def test_ws_call_ringing_relay(alice, bob):
+    """call_ringing is also relayed."""
+    alice_ws = await websockets.connect(f"{WS_URL}?token={alice['token']}")
+    bob_ws = await websockets.connect(f"{WS_URL}?token={bob['token']}")
+    try:
+        await asyncio.sleep(0.3)
+
+        async def drain(ws, timeout=0.2):
+            evts = []
+            try:
+                while True:
+                    msg = await asyncio.wait_for(ws.recv(), timeout=timeout)
+                    evts.append(json.loads(msg))
+            except asyncio.TimeoutError:
+                pass
+            return evts
+
+        await drain(alice_ws); await drain(bob_ws)
+        await bob_ws.send(json.dumps({"type": "call_ringing", "to": alice["user"]["id"]}))
+        evts = await drain(alice_ws, timeout=2.0)
+        ring = [e for e in evts if e.get("type") == "call_ringing"]
+        assert ring and ring[0]["from"] == bob["user"]["id"]
+    finally:
+        await alice_ws.close()
+        await bob_ws.close()

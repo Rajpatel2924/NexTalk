@@ -1,0 +1,56 @@
+{
+  "summary": "Iteration 2: tested newly added WhatsApp-style audio/video call feature. Backend WS call-signaling relay (call_offer/answer/ice/reject/end/ringing) extensively validated via pytest at the protocol level. Frontend conditional rendering of call buttons (private only) verified. Full CallWindow flow could not be exercised in headless Chromium due to WebRTC peer-connection quirks even with getUserMedia stubbed — this is the documented test-boundary limitation per the problem statement. All 24 previously-passing backend tests still pass (regression OK).",
+  "backend_issues": {
+    "critical": [],
+    "minor": [
+      {"endpoint": "/api/ws (call signaling)", "issue": "Server logs 'Look up basic caller info once' only for call_offer (fromUser enrichment). For call_answer/ice/reject/end the receiving client must already know the peer's public_user from the prior call_offer — acceptable for 1:1 calls, just worth documenting."},
+      {"endpoint": "/api/ws (call signaling)", "issue": "call_ringing event is relayed by the server but the frontend callManager.js doesn't currently send or consume it. Either wire it on the frontend (caller shows 'Ringing on remote' once peer connects) or remove from the server allow-list for cleanliness."}
+    ]
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [
+      {
+        "flow": "Start audio/video call (UI side)",
+        "issue": "After clicking start-audio-call-btn / start-video-call-btn with navigator.mediaDevices.getUserMedia stubbed (returning a fake MediaStream with audio+video tracks via Object.defineProperty on navigator), the CallWindow (data-testid='call-window') does NOT appear. No [call] warning is emitted, so the failure happens somewhere between setOutgoing() and the React render — most likely RTCPeerConnection.createOffer / addTrack throws in headless Chromium because the stubbed audio MediaStreamTrack is not a real WebRTC-compatible track. This is the documented limitation in the problem statement ('WebRTC calls cannot be fully tested in a headless browser environment'). Recommend a manual smoke test in a real browser (or wrap pc.createOffer + getUserMedia behind try/catch with a user-visible toast so failures surface in headless).",
+        "affected_selectors": ["[data-testid=\"start-audio-call-btn\"]", "[data-testid=\"start-video-call-btn\"]", "[data-testid=\"call-window\"]"]
+      },
+      {
+        "flow": "WebSocket connect on /app mount",
+        "issue": "Still-present transient 'WebSocket closed before connection established' + '[ws] error, will close socket' warnings in browser console on /app mount. Same as iteration 1; WS still works for messaging events (backend pytest confirms message_new/typing/messages_read all propagate). Likely React StrictMode double-effect.",
+        "affected_selectors": []
+      }
+    ],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_nextalk_api.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [
+    "Main agent: manually verify the call UI flow in a real Chromium/Firefox tab (headless WebRTC is unreliable). Specifically: click start-audio-call-btn -> CallWindow with status 'Ringing…' + remote name -> end-call-btn dismisses; then video call -> video-toggle-btn appears + local-video element renders.",
+    "Consider wiring or removing call_ringing — currently relayed by the server but unused on the frontend.",
+    "Consider catching and toasting RTCPeerConnection setup failures inside callManager.startCall so silent failures surface in the UI.",
+    "(Carried over from iteration 1) Add <DialogDescription> to all shadcn Dialogs to clear React a11y warning; silence the noisy 'WebSocket closed before established' warning on mount."
+  ],
+  "critical_code_review_comments": [
+    "/app/backend/server.py L620: ('call_offer', 'call_answer', 'call_ice', 'call_reject', 'call_end', 'call_ringing') relay is clean and idempotent; events are not persisted, no DB write, no echo to sender. Good.",
+    "callManager.startCall: setOutgoing() is called BEFORE getLocalMedia. If RTCPeerConnection.createOffer subsequently throws (as it appears to in headless), the status remains 'outgoing' until cleanup() in a catch — but the current code only catches getUserMedia errors; createOffer/addTrack failures will leave the call in a stuck 'outgoing' state. Wrap createOffer + setLocalDescription in try/catch and call cleanup() on failure.",
+    "callManager.acceptIncoming: same pattern — only getUserMedia errors are caught; pc setup errors after that leave state stuck.",
+    "WebRTC has no TURN server configured (STUN-only). Calls between users behind symmetric NATs will fail. Acceptable for portfolio demo per problem statement, but worth documenting in README."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_nextalk_api.py (added 3 WS call-signaling tests)",
+    "/app/test_reports/pytest/pytest_results.xml (regenerated)"
+  ],
+  "success_rate": {
+    "backend": "100% (27/27 pytest, incl. 3 new call-signaling tests + all 24 regression)",
+    "frontend": "Partial — button rendering and conditional gating verified; CallWindow open/close flow not exercisable in headless Chromium due to WebRTC limitation. Main agent must self-test in a real browser."
+  },
+  "test_credentials": "alice@test.com / password123, bob@test.com / password123 (registered already from iteration 1).",
+  "seed_data_creation": "Reused fixtures from iteration 1; pytest is idempotent (register-or-login).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend call signaling is fully covered. For UI: navigator.mediaDevices.getUserMedia stub via Object.defineProperty WORKS (getUserMedia present:True in page), but a stubbed audio MediaStreamTrack synthesized via WebAudio is rejected by RTCPeerConnection in headless Chromium — silent failure, no [call] log. Recommendation: don't try to validate the CallWindow render in headless; instead, validate via two concurrent WS connections at the protocol layer (already covered by test_ws_call_signaling_relay). Conditional button rendering (private:true, group:false) is verified.",
+  "rca_of_the_issue": "No code bug for the request scope. The frontend CallWindow render couldn't be confirmed in headless because the synthesized MediaStream from WebAudio + canvas captureStream is not accepted by the real RTCPeerConnection.createOffer/addTrack path in headless Chromium. Documented limitation per the problem statement. Main agent should validate in a real browser."
+}

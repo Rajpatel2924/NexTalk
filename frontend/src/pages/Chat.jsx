@@ -9,6 +9,9 @@ import ChatWindow from "@/components/ChatWindow";
 import NewChatModal from "@/components/NewChatModal";
 import ProfilePanel from "@/components/ProfilePanel";
 import ChatInfoPanel from "@/components/ChatInfoPanel";
+import IncomingCallModal from "@/components/IncomingCallModal";
+import CallWindow from "@/components/CallWindow";
+import { handleCallEvent } from "@/lib/callManager";
 import { toast } from "sonner";
 
 export default function Chat() {
@@ -77,6 +80,8 @@ export default function Chat() {
             : m
         );
         useChat.setState({ messagesByConv: { ...useChat.getState().messagesByConv, [evt.conversationId]: updated } });
+      } else if (evt.type && evt.type.startsWith("call_")) {
+        handleCallEvent(evt);
       }
     });
     return off;
@@ -104,6 +109,10 @@ export default function Chat() {
       <NewChatModal open={!!openNew} onOpenChange={(v) => !v && setOpenNew(null)} mode={openNew || "private"} />
       <ProfilePanel open={openProfile} onOpenChange={setOpenProfile} />
       <ChatInfoPanel open={openInfo} onOpenChange={setOpenInfo} conv={conversations.find((c) => c.id === activeId)} />
+
+      {/* Voice & Video call layer */}
+      <IncomingCallModal />
+      <CallWindow />
     </div>
   );
 }

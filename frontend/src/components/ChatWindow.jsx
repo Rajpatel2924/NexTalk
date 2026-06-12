@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Send, Paperclip, Smile, X, Search, ArrowLeft, Info } from "lucide-react";
+import { Send, Paperclip, Smile, X, Search, ArrowLeft, Info, Phone, Video as VideoIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,8 @@ import { sendWS } from "@/lib/ws";
 import { toast } from "sonner";
 import { convDisplayName, convAvatar, otherUser, lastSeenText, fmtDay } from "@/lib/format";
 import { MAX_UPLOAD_BYTES, TYPING_TIMEOUT_MS, SEARCH_DEBOUNCE_MS } from "@/lib/constants";
+import { startCall } from "@/lib/callManager";
+import { useCall } from "@/store/useCall";
 
 const EMOJIS = ["😀","😂","😍","🤣","😎","😭","🙏","👍","🔥","🎉","❤️","💯","✨","🤔","😅","🙌","🚀","👀","😬","🥺","😴","🤩","🤝","💪","☕","🍕","🍔","🎂","⚽","🎮","📚","🌈","🌙","☀️","💜"];
 
@@ -242,6 +244,21 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
     catch (err) { console.warn("[ChatWindow] delete failed:", err); toast.error("Delete failed"); }
   };
 
+  const handleStartCall = async (callType) => {
+    if (!other) return;
+    if (useCall.getState().status !== "idle") {
+      toast.error("You're already in a call");
+      return;
+    }
+    try {
+      await startCall({ remoteUser: other, conversationId: conv.id, callType });
+      toast.success(`Calling ${other.name}…`);
+    } catch (err) {
+      console.warn("[ChatWindow] startCall failed:", err);
+      toast.error(err?.message || "Couldn't start call");
+    }
+  };
+
   // group messages by date
   const grouped = [];
   let lastDate = "";
@@ -277,6 +294,28 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
           </div>
         </button>
         <div className="flex items-center gap-1">
+          {conv.type === "private" && other && (
+            <>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleStartCall("audio")}
+                data-testid="start-audio-call-btn"
+                title="Voice call"
+              >
+                <Phone className="w-4 h-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => handleStartCall("video")}
+                data-testid="start-video-call-btn"
+                title="Video call"
+              >
+                <VideoIcon className="w-4 h-4" />
+              </Button>
+            </>
+          )}
           <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)} data-testid="toggle-search-btn">
             <Search className="w-4 h-4" />
           </Button>
