@@ -38,7 +38,7 @@ export default function Chat() {
     })();
     connectWS(token);
     return () => disconnectWS();
-  }, [token]); // eslint-disable-line
+  }, [token]); // run once per token change
 
   // WS event handler
   useEffect(() => {
@@ -80,7 +80,7 @@ export default function Chat() {
       }
     });
     return off;
-  }, [activeId, user?.id]); // eslint-disable-line
+  }, [activeId, user?.id]); // store setters are stable
 
   if (!token) return <Navigate to="/login" replace />;
 

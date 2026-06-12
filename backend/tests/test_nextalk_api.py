@@ -301,7 +301,8 @@ async def test_ws_real_time_message_and_typing(alice, bob, private_conv):
                 pass
             return evts
 
-        await drain(alice_ws); await drain(bob_ws)
+        await drain(alice_ws)
+        await drain(bob_ws)
 
         # Alice sends via REST; Bob should receive message_new via WS
         content = f"WS hello {UNIQ}"

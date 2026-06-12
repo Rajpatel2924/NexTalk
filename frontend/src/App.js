@@ -20,8 +20,10 @@ export default function App() {
 
   useEffect(() => {
     if (!token) return;
-    api.get("/auth/me").then(({ data }) => setUser(data)).catch(() => logout());
-  }, [token]); // eslint-disable-line
+    api.get("/auth/me")
+      .then(({ data }) => setUser(data))
+      .catch(() => logout());
+  }, [token, setUser, logout]);
 
   return (
     <BrowserRouter>

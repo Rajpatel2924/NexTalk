@@ -24,7 +24,7 @@ export default function ChatInfoPanel({ open, onOpenChange, conv }) {
         const { data } = await api.get("/users/search", { params: { q } });
         const filtered = data.filter((u) => !conv?.participantIds?.includes(u.id) && !conv?.participants?.find((p) => p.id === u.id));
         setResults(filtered);
-      } catch (_) { /* ignore */ }
+      } catch (err) { console.warn("[ChatInfoPanel] user search failed:", err); }
     })();
   }, [q, addingMembers, conv]);
 

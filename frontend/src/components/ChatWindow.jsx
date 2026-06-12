@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Send, Paperclip, Smile, X, Search, ArrowLeft, Phone, Video as VideoIcon, Info, Image as ImageIcon } from "lucide-react";
+import { Send, Paperclip, Smile, X, Search, ArrowLeft, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -11,8 +11,86 @@ import { useChat } from "@/store/useChat";
 import { sendWS } from "@/lib/ws";
 import { toast } from "sonner";
 import { convDisplayName, convAvatar, otherUser, lastSeenText, fmtDay } from "@/lib/format";
+import { MAX_UPLOAD_BYTES, TYPING_TIMEOUT_MS, SEARCH_DEBOUNCE_MS } from "@/lib/constants";
 
 const EMOJIS = ["😀","😂","😍","🤣","😎","😭","🙏","👍","🔥","🎉","❤️","💯","✨","🤔","😅","🙌","🚀","👀","😬","🥺","😴","🤩","🤝","💪","☕","🍕","🍔","🎂","⚽","🎮","📚","🌈","🌙","☀️","💜"];
+
+// ---- helpers (kept module-level to keep ChatWindow lean) ----
+function detectMessageType(file) {
+  if (file.type.startsWith("image/")) return "image";
+  if (file.type.startsWith("video/")) return "video";
+  return "file";
+}
+function lastSeenForHeader({ isOnline, lastSeen, typing }) {
+  if (typing) return null;
+  return lastSeenText({ isOnline, lastSeen });
+}
+function headerSubtitle({ conv, typingCount, isOnline, lastSeen }) {
+  if (conv.type === "group") return `${conv.participants?.length || 0} members`;
+  if (typingCount > 0) return "typing";
+  return lastSeenText({ isOnline, lastSeen });
+}
+
+function LoadingSkeletons() {
+  return (
+    <div className="space-y-3">
+      {[1, 2, 3, 4].map((i) => (
+        <div
+          key={i}
+          className={`h-10 rounded-2xl bg-muted animate-pulse ${i % 2 ? "max-w-[60%]" : "max-w-[55%] ml-auto"}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function EmptyMessages() {
+  return (
+    <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-20">
+      <Send className="w-10 h-10 opacity-30 mb-3" />
+      <p className="text-sm">No messages yet. Be the first to say hello 👋</p>
+    </div>
+  );
+}
+
+function DateChip({ value }) {
+  return (
+    <div className="flex justify-center my-3">
+      <span className="text-[10px] font-bold uppercase tracking-wider bg-card border border-border px-3 py-1 rounded-full text-muted-foreground">
+        {value}
+      </span>
+    </div>
+  );
+}
+
+function MessagesList({ loading, grouped, conv, messages, myId, setReply, setEditing, setText, onDelete, onReact }) {
+  if (loading) return <LoadingSkeletons />;
+  if (grouped.length === 0) return <EmptyMessages />;
+  return grouped.map((g) => {
+    if (g.type === "date") return <DateChip key={g.id} value={g.value} />;
+    return (
+      <MessageBubble
+        key={g.value.id}
+        msg={g.value}
+        conv={conv}
+        myId={myId}
+        showAvatarName
+        allMessages={messages}
+        onReply={setReply}
+        onEdit={(m) => { setEditing(m); setText(m.content || ""); setReply(null); }}
+        onDelete={onDelete}
+        onReact={onReact}
+        onForward={() => toast.info("Forward coming soon")}
+      />
+    );
+  });
+}
+
+function ComposePreviewLabel({ editing, reply, conv }) {
+  if (editing) return "Editing message";
+  const replyTo = conv.participants?.find((p) => p.id === reply.senderId)?.name || "...";
+  return `Replying to ${replyTo}`;
+}
 
 export default function ChatWindow({ onOpenInfo, onBack }) {
   const { user } = useAuth();
@@ -56,12 +134,13 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
         await api.post(`/messages/${activeId}/read`);
         markAllRead(activeId);
       } catch (e) {
+        console.warn("[ChatWindow] failed to load messages:", e);
         toast.error("Failed to load messages");
       } finally {
         setLoading(false);
       }
     })();
-  }, [activeId]); // eslint-disable-line
+  }, [activeId]);
 
   // autoscroll
   useEffect(() => {
@@ -75,8 +154,8 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
       try {
         const { data } = await api.get(`/messages/${activeId}/search`, { params: { q: searchQ } });
         setSearchResults(data);
-      } catch (_) { /* ignore */ }
-    }, 200);
+      } catch (err) { console.warn("[ChatWindow] search failed:", err); }
+    }, SEARCH_DEBOUNCE_MS);
     return () => clearTimeout(t);
   }, [searchQ, searchOpen, activeId]);
 
@@ -102,7 +181,7 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
     if (typingTimerRef.current) clearTimeout(typingTimerRef.current);
     typingTimerRef.current = setTimeout(() => {
       sendWS({ type: "typing", conversationId: conv.id, isTyping: false });
-    }, 2500);
+    }, TYPING_TIMEOUT_MS);
   };
 
   const sendNow = async () => {
@@ -111,7 +190,7 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
       try {
         await api.patch(`/messages/${editing.id}`, { content: text });
         toast.success("Message updated");
-      } catch { toast.error("Edit failed"); }
+      } catch (err) { console.warn("[ChatWindow] edit failed:", err); toast.error("Edit failed"); }
       setEditing(null); setText("");
       return;
     }
@@ -123,16 +202,15 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
     };
     setText(""); setReply(null);
     try { await api.post("/messages", body); }
-    catch { toast.error("Send failed"); }
+    catch (err) { console.warn("[ChatWindow] send failed:", err); toast.error("Send failed"); }
     sendWS({ type: "typing", conversationId: conv.id, isTyping: false });
   };
 
   const handleFile = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (f.size > 5 * 1024 * 1024) { toast.error("Max 5MB"); return; }
-    const isImage = f.type.startsWith("image/");
-    const isVideo = f.type.startsWith("video/");
+    if (f.size > MAX_UPLOAD_BYTES) { toast.error("Max 5MB"); return; }
+    const messageType = detectMessageType(f);
     const formData = new FormData();
     formData.append("file", f);
     try {
@@ -142,7 +220,7 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
       await api.post("/messages", {
         conversationId: conv.id,
         content: text.trim(),
-        messageType: isImage ? "image" : isVideo ? "video" : "file",
+        messageType,
         attachmentUrl: data.url,
         attachmentName: data.name,
       });
@@ -156,12 +234,12 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
 
   const onReact = async (mid, emoji) => {
     try { await api.post(`/messages/${mid}/react`, { emoji }); }
-    catch { toast.error("Reaction failed"); }
+    catch (err) { console.warn("[ChatWindow] react failed:", err); toast.error("Reaction failed"); }
   };
   const onDelete = async (m) => {
     if (!window.confirm("Delete this message?")) return;
     try { await api.delete(`/messages/${m.id}`); }
-    catch { toast.error("Delete failed"); }
+    catch (err) { console.warn("[ChatWindow] delete failed:", err); toast.error("Delete failed"); }
   };
 
   // group messages by date
@@ -188,11 +266,13 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
           <div className="min-w-0">
             <div className="font-bold truncate">{convDisplayName(conv, user?.id)}</div>
             <div className="text-xs text-muted-foreground truncate">
-              {conv.type === "group"
-                ? `${conv.participants?.length || 0} members`
-                : (Object.values(typingMap).length > 0
-                  ? <span className="text-primary font-semibold">typing…</span>
-                  : lastSeenText({ isOnline, lastSeen: otherPresence?.lastSeen || other?.lastSeen }))}
+              {(() => {
+                if (conv.type === "group") return `${conv.participants?.length || 0} members`;
+                if (Object.values(typingMap).length > 0) {
+                  return <span className="text-primary font-semibold">typing…</span>;
+                }
+                return lastSeenText({ isOnline, lastSeen: otherPresence?.lastSeen || other?.lastSeen });
+              })()}
             </div>
           </div>
         </button>
@@ -235,38 +315,18 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
 
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto thin-scroll px-4 py-4 space-y-2" data-testid="messages-container">
-        {loading ? (
-          <div className="space-y-3">
-            {[1,2,3,4].map((i) => (
-              <div key={i} className={`h-10 rounded-2xl bg-muted animate-pulse ${i%2 ? "max-w-[60%]" : "max-w-[55%] ml-auto"}`} />
-            ))}
-          </div>
-        ) : grouped.length === 0 ? (
-          <div className="h-full flex flex-col items-center justify-center text-center text-muted-foreground py-20">
-            <Send className="w-10 h-10 opacity-30 mb-3" />
-            <p className="text-sm">No messages yet. Be the first to say hello 👋</p>
-          </div>
-        ) : grouped.map((g) => g.type === "date" ? (
-          <div key={g.id} className="flex justify-center my-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider bg-card border border-border px-3 py-1 rounded-full text-muted-foreground">
-              {g.value}
-            </span>
-          </div>
-        ) : (
-          <MessageBubble
-            key={g.value.id}
-            msg={g.value}
-            conv={conv}
-            myId={user?.id}
-            showAvatarName
-            allMessages={messages}
-            onReply={setReply}
-            onEdit={(m) => { setEditing(m); setText(m.content || ""); setReply(null); }}
-            onDelete={onDelete}
-            onReact={onReact}
-            onForward={() => toast.info("Forward coming soon")}
-          />
-        ))}
+        <MessagesList
+          loading={loading}
+          grouped={grouped}
+          conv={conv}
+          messages={messages}
+          myId={user?.id}
+          setReply={setReply}
+          setEditing={setEditing}
+          setText={setText}
+          onDelete={onDelete}
+          onReact={onReact}
+        />
         {typingUsers.length > 0 && (
           <div className="flex items-center gap-2 text-xs text-muted-foreground pl-2">
             <span className="inline-flex gap-1 text-primary">
@@ -282,7 +342,7 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
         <div className="px-4 py-2 bg-muted/50 border-t border-border flex items-center justify-between" data-testid="compose-preview">
           <div className="text-xs">
             <div className="font-bold text-primary">
-              {editing ? "Editing message" : `Replying to ${(conv.participants?.find(p => p.id === reply.senderId)?.name) || "..."}`}
+              <ComposePreviewLabel editing={editing} reply={reply} conv={conv} />
             </div>
             <div className="truncate max-w-md text-muted-foreground">{(editing?.content || reply?.content) || "(media)"}</div>
           </div>

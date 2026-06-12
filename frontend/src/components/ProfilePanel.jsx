@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Camera, LogOut, Save } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { Avatar } from "@/components/Avatar";
 import { useAuth } from "@/store/useAuth";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
+import { MAX_AVATAR_BYTES } from "@/lib/constants";
 
 export default function ProfilePanel({ open, onOpenChange }) {
   const { user, setUser, logout } = useAuth();
@@ -17,19 +18,22 @@ export default function ProfilePanel({ open, onOpenChange }) {
   const [busy, setBusy] = useState(false);
   const fileRef = useRef(null);
 
-  React.useEffect(() => {
-    if (open) setForm({ name: user?.name || "", bio: user?.bio || "", avatar: user?.avatar || "" });
-  }, [open, user]);
+  const userName = user?.name;
+  const userBio = user?.bio;
+  const userAvatar = user?.avatar;
+  useEffect(() => {
+    if (open) setForm({ name: userName || "", bio: userBio || "", avatar: userAvatar || "" });
+  }, [open, userName, userBio, userAvatar]);
 
   const pickAvatar = async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    if (f.size > 2 * 1024 * 1024) { toast.error("Max 2MB"); return; }
+    if (f.size > MAX_AVATAR_BYTES) { toast.error("Max 2MB"); return; }
     const formData = new FormData(); formData.append("file", f);
     try {
       const { data } = await api.post("/upload", formData, { headers: { "Content-Type": "multipart/form-data" } });
       setForm((s) => ({ ...s, avatar: data.url }));
-    } catch { toast.error("Upload failed"); }
+    } catch (err) { console.warn("[ProfilePanel] avatar upload failed:", err); toast.error("Upload failed"); }
     e.target.value = "";
   };
 

@@ -9,6 +9,11 @@ import { toast } from "sonner";
 
 const QUICK_EMOJI = ["❤️", "😂", "👍", "🔥", "😮", "🙏"];
 
+// Stable framer-motion props (avoid creating new objects per render)
+const BUBBLE_INITIAL = { opacity: 0, y: 8, scale: 0.96 };
+const BUBBLE_ANIMATE = { opacity: 1, y: 0, scale: 1 };
+const BUBBLE_TRANSITION = { duration: 0.18 };
+
 function ReadTicks({ msg, conv, myId }) {
   if (msg.senderId !== myId) return null;
   const others = (conv?.participants || []).filter((p) => p.id !== myId).map((p) => p.id);
@@ -47,9 +52,9 @@ export default function MessageBubble({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 8, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.18 }}
+      initial={BUBBLE_INITIAL}
+      animate={BUBBLE_ANIMATE}
+      transition={BUBBLE_TRANSITION}
       className={`flex ${mine ? "justify-end" : "justify-start"} group`}
       onMouseEnter={() => setShowActions(true)}
       onMouseLeave={() => setShowActions(false)}

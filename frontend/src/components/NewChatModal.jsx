@@ -23,7 +23,7 @@ export default function NewChatModal({ open, onOpenChange, mode = "private" }) {
       try {
         const { data } = await api.get("/users/search", { params: { q } });
         setUsers(data);
-      } catch (_) { /* ignore */ }
+      } catch (err) { console.warn("[NewChatModal] user search failed:", err); }
     })();
   }, [q, open]);
 

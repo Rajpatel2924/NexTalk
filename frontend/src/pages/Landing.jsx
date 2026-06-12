@@ -11,6 +11,14 @@ const features = [
   { icon: Bell, title: "Smart notifications", desc: "Typing indicators, read receipts, and unread badges keep you in flow.", color: "bg-[#FFD9C7]" },
 ];
 
+// Stable framer-motion props (extracted to avoid creating new objects each render)
+const HERO_INITIAL = { opacity: 0, y: 24 };
+const HERO_ANIMATE = { opacity: 1, y: 0 };
+const HERO_TRANSITION = { duration: 0.6, ease: "easeOut" };
+const FEATURE_INITIAL = { opacity: 0, y: 16 };
+const FEATURE_INVIEW = { opacity: 1, y: 0 };
+const FEATURE_VIEWPORT = { once: true };
+
 export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -79,9 +87,9 @@ export default function Landing() {
           {/* Right: floating chat preview */}
           <div className="lg:col-span-5 relative">
             <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
+              initial={HERO_INITIAL}
+              animate={HERO_ANIMATE}
+              transition={HERO_TRANSITION}
               className="relative"
             >
               <div className="absolute -top-6 -left-6 w-24 h-24 rounded-2xl bg-secondary -rotate-6" />
@@ -131,9 +139,9 @@ export default function Landing() {
           {features.map((f, i) => (
             <motion.div
               key={f.title}
-              initial={{ opacity: 0, y: 16 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
+              initial={FEATURE_INITIAL}
+              whileInView={FEATURE_INVIEW}
+              viewport={FEATURE_VIEWPORT}
               transition={{ delay: i * 0.08 }}
               className="bento p-7"
               data-testid={`feature-card-${i}`}

@@ -12,17 +12,22 @@ import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+function previewText(last) {
+  if (!last) return "Say hello 👋";
+  if (last.isDeleted) return "Message deleted";
+  if (last.messageType && last.messageType !== "text") {
+    return `📎 ${last.attachmentName || last.messageType}`;
+  }
+  return last.content || "Say hello 👋";
+}
+
 function ConversationRow({ conv, active, onClick, myId, presence, onPin, onArchive, onDelete }) {
   const name = convDisplayName(conv, myId);
   const avatar = convAvatar(conv, myId);
   const other = otherUser(conv, myId);
   const online = other ? (presence[other.id]?.isOnline ?? other.isOnline) : false;
   const last = conv.lastMessage;
-  const lastText = last?.isDeleted
-    ? "Message deleted"
-    : last?.messageType && last.messageType !== "text"
-    ? `📎 ${last.attachmentName || last.messageType}`
-    : last?.content || "Say hello 👋";
+  const lastText = previewText(last);
 
   return (
     <div
