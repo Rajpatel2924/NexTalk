@@ -61,18 +61,18 @@ export default function CallWindow() {
         initial={PANEL_INITIAL}
         animate={PANEL_ANIMATE}
         exit={PANEL_EXIT}
-        className="fixed inset-0 z-[90] bg-foreground/95 flex flex-col items-center justify-between p-6 backdrop-blur-2xl"
+        className="fixed inset-0 z-[90] bg-foreground/95 flex flex-col items-center justify-between p-6 backdrop-blur-2xl grain"
         data-testid="call-window"
       >
         {/* Header */}
         <div className="text-center text-background pt-4">
-          <div className="text-[10px] font-bold uppercase tracking-[0.3em] opacity-60">
+          <div className="eyebrow opacity-70">
             {isVideo ? "Video call" : "Voice call"}
           </div>
-          <div className="font-display text-2xl font-bold mt-1" data-testid="call-peer-name">
+          <div className="font-display font-black text-3xl mt-2 tracking-tighter" data-testid="call-peer-name">
             {remoteUser?.name || "Unknown"}
           </div>
-          <div className="text-sm opacity-70 mt-1" data-testid="call-status">{statusText}</div>
+          <div className="text-sm opacity-70 mt-1 font-medium" data-testid="call-status">{statusText}</div>
         </div>
 
         {/* Body */}
@@ -108,11 +108,11 @@ export default function CallWindow() {
           )}
         </div>
 
-        {/* Controls */}
-        <div className="flex items-center gap-4 pb-4">
+        {/* Controls (glass capsule) */}
+        <div className="flex items-center gap-3 p-2 rounded-full bg-background/15 backdrop-blur-xl border border-background/15 shadow-2xl">
           <button
             onClick={toggleMute}
-            className={`w-14 h-14 rounded-full flex items-center justify-center text-foreground transition-transform hover:scale-110 ${isMuted ? "bg-destructive text-white" : "bg-background"}`}
+            className={`w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 ${isMuted ? "bg-destructive text-white" : "bg-background text-foreground"}`}
             data-testid="mute-toggle-btn"
             title={isMuted ? "Unmute" : "Mute"}
           >
@@ -122,7 +122,7 @@ export default function CallWindow() {
           {isVideo && (
             <button
               onClick={toggleVideo}
-              className={`w-14 h-14 rounded-full flex items-center justify-center text-foreground transition-transform hover:scale-110 ${isVideoOff ? "bg-destructive text-white" : "bg-background"}`}
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 ${isVideoOff ? "bg-destructive text-white" : "bg-background text-foreground"}`}
               data-testid="video-toggle-btn"
               title={isVideoOff ? "Turn on camera" : "Turn off camera"}
             >
@@ -132,7 +132,7 @@ export default function CallWindow() {
 
           <button
             onClick={() => endCall()}
-            className="w-16 h-14 rounded-full bg-destructive text-white flex items-center justify-center transition-transform hover:scale-110 shadow-lg"
+            className="w-20 h-14 rounded-full bg-primary text-primary-foreground flex items-center justify-center transition-transform hover:scale-105 active:scale-95 shadow-coral-lg font-bold"
             data-testid="end-call-btn"
             title="End call"
           >

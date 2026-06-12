@@ -15,8 +15,30 @@ function Protected({ children }) {
   return children;
 }
 
+// Theme = 'system' | 'light' | 'dark', persisted to localStorage.
+// Updates document.documentElement.classList.dark to match the resolved theme.
+function useSystemTheme() {
+  useEffect(() => {
+    const apply = () => {
+      const saved = localStorage.getItem("nextalk-theme") || "system";
+      const isDark =
+        saved === "dark" ||
+        (saved === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      document.documentElement.classList.toggle("dark", isDark);
+    };
+    apply();
+    const mq = window.matchMedia("(prefers-color-scheme: dark)");
+    const onChange = () => {
+      if ((localStorage.getItem("nextalk-theme") || "system") === "system") apply();
+    };
+    mq.addEventListener?.("change", onChange);
+    return () => mq.removeEventListener?.("change", onChange);
+  }, []);
+}
+
 export default function App() {
   const { token, setUser, logout } = useAuth();
+  useSystemTheme();
 
   useEffect(() => {
     if (!token) return;
@@ -27,7 +49,11 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <Toaster richColors position="top-right" />
+      <Toaster
+        richColors
+        position="top-right"
+        toastOptions={{ className: "font-medium" }}
+      />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />

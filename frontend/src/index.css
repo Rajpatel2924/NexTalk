@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,49 +6,50 @@
 
 @layer base {
   :root {
-    /* NexTalk – Pastel + Neo-Brutalist light */
-    --background: 40 18% 96%;          /* #F6F5F2 */
-    --foreground: 0 0% 10%;            /* #1A1A1A */
+    /* NexTalk – Vibrant Editorial (light) – warm off-white + coral + mint + acid yellow */
+    --background: 45 20% 98%;          /* #FBFAF7 */
+    --foreground: 240 10% 10%;         /* #18181B */
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 240 10% 10%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --primary: 256 100% 89%;           /* #D4C5FF */
-    --primary-foreground: 0 0% 7%;     /* #111 */
-    --secondary: 140 49% 92%;          /* #E0F4E8 */
-    --secondary-foreground: 0 0% 7%;
-    --muted: 40 12% 92%;
-    --muted-foreground: 0 0% 40%;
-    --accent: 52 100% 85%;             /* #FFF4B3 */
-    --accent-foreground: 0 0% 7%;
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 256 100% 70%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 356 100% 67%;           /* #FF5A5F – electric coral */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 160 90% 43%;          /* #0EB37A – vivid mint */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 45 10% 92%;
+    --muted-foreground: 240 5% 45%;
+    --accent: 45 100% 65%;             /* #FFD84D – acid yellow */
+    --accent-foreground: 240 10% 10%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 10% 85%;
+    --input: 240 10% 85%;
+    --ring: 356 100% 67%;
     --radius: 0.875rem;
   }
 
   .dark {
-    --background: 240 14% 6%;          /* #0D0D12 */
-    --foreground: 0 0% 94%;
-    --card: 240 14% 10%;               /* #16161D */
-    --card-foreground: 0 0% 94%;
-    --popover: 240 14% 10%;
-    --popover-foreground: 0 0% 94%;
-    --primary: 256 65% 75%;            /* #A992EB */
+    /* Deep charcoal + same accents – premium, contrasty */
+    --background: 240 10% 6%;          /* #0E0E12 */
+    --foreground: 0 0% 98%;
+    --card: 240 10% 9%;                /* #16161B */
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 356 100% 67%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 140 12% 20%;
-    --secondary-foreground: 140 49% 88%;
-    --muted: 240 8% 14%;
-    --muted-foreground: 240 5% 60%;
-    --accent: 50 28% 23%;
-    --accent-foreground: 52 100% 80%;
-    --destructive: 0 60% 40%;
+    --secondary: 160 90% 43%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 10% 15%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 45 100% 65%;
+    --accent-foreground: 240 10% 10%;
+    --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 240 8% 18%;
-    --input: 240 8% 18%;
-    --ring: 256 65% 60%;
+    --border: 240 10% 18%;
+    --input: 240 10% 18%;
+    --ring: 356 100% 67%;
   }
 }
 
@@ -57,17 +58,34 @@
   html, body, #root { height: 100%; }
   body {
     @apply bg-background text-foreground;
-    font-family: 'Manrope', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   h1, h2, h3, h4, h5, .font-display {
-    font-family: 'Outfit', 'Manrope', sans-serif;
-    letter-spacing: -0.02em;
+    font-family: 'Epilogue', 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: -0.025em;
   }
   code, pre { font-family: 'JetBrains Mono', monospace; }
+  ::selection { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); }
 }
 
-/* ====== custom: typing dots ====== */
+/* ===== Typography helpers ===== */
+.h-display {
+  font-family: 'Epilogue', sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.95;
+}
+
+.eyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 800;
+}
+
+/* ===== Typing dots ===== */
 .typing-dot {
   width: 6px; height: 6px;
   background: currentColor; border-radius: 9999px;
@@ -81,28 +99,36 @@
   30% { transform: translateY(-4px); opacity: 1; }
 }
 
-/* ====== chat bubbles ====== */
+/* ===== Chat bubbles ===== */
 .bubble-sent {
   background: hsl(var(--primary));
   color: hsl(var(--primary-foreground));
-  border-radius: 1.1rem 1.1rem 0.25rem 1.1rem;
+  border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+  box-shadow: 0 1px 2px hsl(var(--primary) / 0.25);
 }
 .bubble-received {
   background: hsl(var(--card));
   color: hsl(var(--card-foreground));
   border: 1px solid hsl(var(--border));
-  border-radius: 1.1rem 1.1rem 1.1rem 0.25rem;
+  border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
 }
+.dark .bubble-received { background: hsl(var(--muted)); }
 
-/* ====== glass header ====== */
+/* ===== Glass header / panels ===== */
 .glass {
-  backdrop-filter: blur(20px) saturate(150%);
-  -webkit-backdrop-filter: blur(20px) saturate(150%);
-  background: hsl(var(--background) / 0.72);
-  border-bottom: 1px solid hsl(var(--border));
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  background: hsl(var(--background) / 0.7);
+  border-bottom: 1px solid hsl(var(--border) / 0.6);
+}
+.glass-strong {
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  background: hsl(var(--card) / 0.65);
+  border: 1px solid hsl(var(--border) / 0.5);
 }
 
-/* ====== scrollbar ====== */
+/* ===== Thin scrollbars ===== */
 .thin-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
 .thin-scroll::-webkit-scrollbar-track { background: transparent; }
 .thin-scroll::-webkit-scrollbar-thumb {
@@ -111,31 +137,100 @@
 }
 .thin-scroll::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground) / 0.4); }
 
-/* ====== bento card ====== */
+/* ===== Bento cards (landing) ===== */
 .bento {
   background: hsl(var(--card));
   border: 1px solid hsl(var(--border));
-  border-radius: 1.25rem;
-  transition: transform 200ms ease, box-shadow 200ms ease;
+  border-radius: 1.5rem;
+  transition: transform 350ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              border-color 350ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 350ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.bento:hover { transform: translateY(-4px); box-shadow: 0 16px 40px -20px hsl(var(--primary) / 0.45); }
+.bento:hover {
+  transform: translateY(-4px);
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 24px 60px -28px hsl(var(--primary) / 0.45);
+}
 
-/* dotted grid background */
+/* Dotted grid bg (subtle) */
 .dot-grid {
   background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
-  background-size: 18px 18px;
+  background-size: 22px 22px;
 }
 
-/* gentle pulse for online dot */
+/* Grain texture overlay */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.18;
+  border-radius: inherit;
+}
+
+/* ===== Online presence pulse ===== */
 .online-dot::after {
   content: '';
   position: absolute; inset: 0;
   border-radius: 9999px;
-  background: #22c55e;
+  background: hsl(var(--secondary));
   opacity: 0.55;
   animation: ping-soft 1.8s cubic-bezier(0,0,.2,1) infinite;
 }
 @keyframes ping-soft {
   0% { transform: scale(1); opacity: 0.6; }
   75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ===== Marquee strip (landing social proof) ===== */
+.marquee {
+  display: flex; gap: 3rem;
+  animation: scroll 30s linear infinite;
+  width: max-content;
+}
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ===== Button hover bump ===== */
+.btn-bump {
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+              box-shadow 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.btn-bump:hover { transform: translateY(-1px); }
+.btn-bump:active { transform: translateY(0) scale(0.98); }
+
+/* ===== Coral CTA shadow ===== */
+.shadow-coral { box-shadow: 0 10px 30px -10px hsl(var(--primary) / 0.55); }
+.shadow-coral-lg { box-shadow: 0 24px 60px -18px hsl(var(--primary) / 0.6); }
+
+/* ===== Underline link ===== */
+.link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1.5px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.link-underline:hover { background-size: 100% 1.5px; }
+
+/* ===== Sidebar chat row active style ===== */
+.row-active {
+  background: hsl(var(--muted) / 0.85);
+  box-shadow: inset 3px 0 0 0 hsl(var(--primary));
+}
+
+/* ===== Confetti-style sticker chips (for reactions) ===== */
+.chip-pop {
+  animation: pop 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@keyframes pop {
+  0% { transform: scale(0.6); opacity: 0; }
+  60% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
 }

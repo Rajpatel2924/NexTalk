@@ -23,12 +23,6 @@ export default function Chat() {
   const [openNew, setOpenNew] = useState(null); // 'private' | 'group' | null
   const [openProfile, setOpenProfile] = useState(false);
   const [openInfo, setOpenInfo] = useState(false);
-  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains("dark"));
-
-  useEffect(() => {
-    if (isDark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
-  }, [isDark]);
 
   // Initial load
   useEffect(() => {
@@ -95,8 +89,6 @@ export default function Chat() {
         <ChatSidebar
           onNew={(mode) => setOpenNew(mode)}
           onOpenProfile={() => setOpenProfile(true)}
-          onToggleTheme={() => setIsDark((d) => !d)}
-          isDark={isDark}
         />
       </div>
       <div className={`${activeId ? "flex" : "hidden md:flex"} flex-1 flex-col h-full`}>

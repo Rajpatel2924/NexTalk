@@ -163,13 +163,15 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
 
   if (!conv) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-background dot-grid" data-testid="empty-chat-state">
-        <div className="text-center max-w-sm px-6">
-          <div className="w-24 h-24 mx-auto mb-6 rounded-3xl bg-primary/40 flex items-center justify-center">
-            <Send className="w-10 h-10" />
+      <div className="flex-1 flex items-center justify-center bg-background dot-grid relative" data-testid="empty-chat-state">
+        <div className="absolute -top-32 right-1/4 w-72 h-72 rounded-full bg-primary/15 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-10 left-1/4 w-60 h-60 rounded-full bg-accent/30 blur-3xl pointer-events-none" />
+        <div className="text-center max-w-md px-6 relative">
+          <div className="w-20 h-20 mx-auto mb-6 rounded-3xl bg-primary shadow-coral-lg flex items-center justify-center -rotate-3">
+            <Send className="w-9 h-9 text-primary-foreground" />
           </div>
-          <h2 className="font-display text-2xl font-bold tracking-tight mb-2">Pick a conversation</h2>
-          <p className="text-sm text-muted-foreground">
+          <h2 className="h-display text-3xl sm:text-4xl tracking-tight mb-3">Pick a conversation.</h2>
+          <p className="text-base text-muted-foreground font-medium leading-relaxed">
             Select a chat from the sidebar — or start a new one — to begin messaging.
           </p>
         </div>
@@ -294,12 +296,12 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
         <button onClick={onOpenInfo} className="flex items-center gap-3 flex-1 min-w-0 text-left" data-testid="open-chat-info-btn">
           <Avatar src={convAvatar(conv, user?.id)} name={convDisplayName(conv, user?.id)} size={40} online={isOnline} />
           <div className="min-w-0">
-            <div className="font-bold truncate">{convDisplayName(conv, user?.id)}</div>
-            <div className="text-xs text-muted-foreground truncate">
+            <div className="font-display font-extrabold tracking-tight truncate">{convDisplayName(conv, user?.id)}</div>
+            <div className="text-xs text-muted-foreground truncate font-medium">
               {(() => {
                 if (conv.type === "group") return `${conv.participants?.length || 0} members`;
                 if (Object.values(typingMap).length > 0) {
-                  return <span className="text-primary font-semibold">typing…</span>;
+                  return <span className="text-primary font-bold">typing…</span>;
                 }
                 return lastSeenText({ isOnline, lastSeen: otherPresence?.lastSeen || other?.lastSeen });
               })()}
