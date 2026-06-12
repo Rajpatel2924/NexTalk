@@ -37,7 +37,7 @@
     "clsx": "2.1.1",
     "cmdk": "1.1.1",
     "cra-template": "1.2.0",
-    "date-fns": "3.6.0"
+    "date-fns": "3.6.0",
     "dayjs": "1.11.13",
     "embla-carousel-react": "8.6.0",
     "framer-motion": "11.18.0",
@@ -79,8 +79,9 @@
     ]
   },
   "devDependencies": {
-    "ajv": "^8.17.1"
-    "ajv-keywords": "^5.1.0"
+    "axios": "1.8.4",
+    "ajv": "^8.17.1",
+    "ajv-keywords": "^5.1.0",
     "@babel/plugin-proposal-private-property-in-object": "7.21.11",
     "@craco/craco": "7.1.0",
     "@eslint/js": "9.23.0",
