@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Search, X, Check, Users } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/Avatar";
@@ -74,6 +74,9 @@ export default function NewChatModal({ open, onOpenChange, mode = "private" }) {
           <DialogTitle className="font-display tracking-tight">
             {isGroup ? "Create a group" : "Start a new chat"}
           </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            {isGroup ? "Pick teammates to bring into the conversation." : "Find people by name or email to start chatting."}
+          </DialogDescription>
         </DialogHeader>
 
         {isGroup && (
