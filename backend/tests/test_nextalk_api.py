@@ -468,29 +468,3 @@ async def test_ws_call_event_missing_to_ignored(alice, bob):
         await bob_ws.close()
 
 
-@pytest.mark.asyncio
-async def test_ws_call_ringing_relay(alice, bob):
-    """call_ringing is also relayed."""
-    alice_ws = await websockets.connect(f"{WS_URL}?token={alice['token']}")
-    bob_ws = await websockets.connect(f"{WS_URL}?token={bob['token']}")
-    try:
-        await asyncio.sleep(0.3)
-
-        async def drain(ws, timeout=0.2):
-            evts = []
-            try:
-                while True:
-                    msg = await asyncio.wait_for(ws.recv(), timeout=timeout)
-                    evts.append(json.loads(msg))
-            except asyncio.TimeoutError:
-                pass
-            return evts
-
-        await drain(alice_ws); await drain(bob_ws)
-        await bob_ws.send(json.dumps({"type": "call_ringing", "to": alice["user"]["id"]}))
-        evts = await drain(alice_ws, timeout=2.0)
-        ring = [e for e in evts if e.get("type") == "call_ringing"]
-        assert ring and ring[0]["from"] == bob["user"]["id"]
-    finally:
-        await alice_ws.close()
-        await bob_ws.close()

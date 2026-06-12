@@ -617,7 +617,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str = Query(...)):
 
             # ---- WebRTC call signaling (1:1) ----
             # These events are simply relayed to the target user. They are stateless on the server.
-            elif etype in ("call_offer", "call_answer", "call_ice", "call_reject", "call_end", "call_ringing"):
+            elif etype in ("call_offer", "call_answer", "call_ice", "call_reject", "call_end"):
                 target = event.get("to")
                 if not target:
                     continue

@@ -82,21 +82,27 @@ export async function startCall({ remoteUser, conversationId, callType }) {
   }
   useCall.getState().setLocalStream(localStream);
 
-  pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-  attachPCHandlers({ remoteUserId: remoteUser.id, callId });
-  localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+  try {
+    pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    attachPCHandlers({ remoteUserId: remoteUser.id, callId });
+    localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
-  const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: callType === "video" });
-  await pc.setLocalDescription(offer);
+    const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: callType === "video" });
+    await pc.setLocalDescription(offer);
 
-  sendWS({
-    type: "call_offer",
-    to: remoteUser.id,
-    callId,
-    conversationId,
-    callType,
-    sdp: pc.localDescription,
-  });
+    sendWS({
+      type: "call_offer",
+      to: remoteUser.id,
+      callId,
+      conversationId,
+      callType,
+      sdp: pc.localDescription,
+    });
+  } catch (err) {
+    console.warn("[call] peer connection setup failed (caller):", err);
+    cleanup();
+    throw new Error("Couldn't establish call connection");
+  }
 }
 
 // ---- Callee side ----
@@ -116,26 +122,32 @@ export async function acceptIncoming() {
   }
   useCall.getState().setLocalStream(localStream);
 
-  pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
-  attachPCHandlers({ remoteUserId: remoteUser.id, callId });
-  localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+  try {
+    pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+    attachPCHandlers({ remoteUserId: remoteUser.id, callId });
+    localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
 
-  await pc.setRemoteDescription(_pendingOffer);
-  // flush ICE candidates that arrived before remote description was set
-  while (pendingCandidates.length) {
-    try { await pc.addIceCandidate(pendingCandidates.shift()); }
-    catch (e) { console.warn("[call] addIceCandidate (queued) failed:", e); }
+    await pc.setRemoteDescription(_pendingOffer);
+    // flush ICE candidates that arrived before remote description was set
+    while (pendingCandidates.length) {
+      try { await pc.addIceCandidate(pendingCandidates.shift()); }
+      catch (e) { console.warn("[call] addIceCandidate (queued) failed:", e); }
+    }
+
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+
+    sendWS({
+      type: "call_answer",
+      to: remoteUser.id,
+      callId,
+      sdp: pc.localDescription,
+    });
+  } catch (err) {
+    console.warn("[call] peer connection setup failed (callee):", err);
+    rejectIncoming();
+    throw new Error("Couldn't establish call connection");
   }
-
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  sendWS({
-    type: "call_answer",
-    to: remoteUser.id,
-    callId,
-    sdp: pc.localDescription,
-  });
 }
 
 export function rejectIncoming() {

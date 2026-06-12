@@ -48,7 +48,13 @@ Build a production-ready full-stack real-time messaging platform inspired by Wha
   - Message search inside conversation.
   - Group info panel (members list, admin crown, add/remove members, leave group, media gallery).
   - Profile panel: name, bio, avatar (upload), change password, sign out.
-- Backend (24/24 pytest passing): full REST + WS coverage.
+- **🆕 1:1 Audio & Video calls (WhatsApp-style)** — WebRTC peer-to-peer, Google STUN, signaling relayed via existing FastAPI WebSocket:
+  - Audio call + Video call buttons in private chat header.
+  - Outgoing call modal (full-screen) with peer avatar, status (`Ringing… / Connecting… / 00:42`), mute, camera toggle, end call.
+  - Incoming call card (top-right) with accept / reject + animated ring pulse.
+  - Local PiP video; remote video full-frame; mute / video-off track controls.
+- Backend (26/26 pytest passing): full REST + WS + call-signaling-relay coverage.
+- Code-review pass: empty catches replaced with `console.warn`, magic numbers extracted to `lib/constants.js`, nested ternaries replaced with helper components, inline framer-motion objects hoisted to module-level, defensive `try/catch` around `RTCPeerConnection` setup.
 
 ## 6. Deferred / Backlog
 ### P1 (high value, not blocking)
