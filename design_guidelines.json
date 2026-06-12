@@ -1,158 +1,195 @@
 {
-  "project_name": "NexTalk – Real-Time Messaging Platform",
-  "theme_and_archetype": {
-    "domain": "Social Apps, Productivity, Messaging",
-    "theme": "LIGHT (with Dark Mode support)",
-    "archetype": "Archetype 3: Pastel & Soft (with a Neo-Brutalist twist)",
-    "reasoning": "Messaging apps require high legibility and an approachable, optimistic vibe. By blending soft pastels (Lavender, Mint, Butter Yellow) with sharp 1px borders and high-contrast typography, we avoid the generic 'clinical SaaS' look and create a tactile, indie-modern feel that is distinctly memorable. The app feels fast but human."
+  "theme": {
+    "archetype": "3 + 4 Hybrid (Vibrant Neo-Brutalist polished into High-End Editorial)",
+    "description": "A bold, vibrant, friendly yet highly polished hybrid theme. Combines the approachability of pastel/neo-brutalism with the crisp contrast and authority of Swiss design. It feels premium and portfolio-grade, shedding generic SaaS purple-gradients for strong editorial typography and confident, unapologetic color blocking."
   },
   "typography": {
-    "strategy": "The 'Soft Utility' Pairing",
-    "fonts": {
-      "headings": {
-        "family": "Outfit",
-        "description": "Expressive geometric sans. Never use Inter for headings.",
-        "weights": [400, 700, 800],
-        "classes": "font-sans font-bold tracking-tight"
-      },
-      "body": {
-        "family": "Manrope",
-        "description": "Highly readable, clean sans for dense chat logs.",
-        "weights": [400, 500, 600],
-        "classes": "font-sans leading-relaxed"
-      },
-      "monospace": {
-        "family": "JetBrains Mono",
-        "description": "For code snippets in messages.",
-        "classes": "font-mono text-sm"
-      }
+    "pairing": {
+      "heading": "Epilogue",
+      "body": "Plus Jakarta Sans",
+      "monospace": "JetBrains Mono"
     },
-    "hierarchy": {
-      "h1": "text-5xl sm:text-6xl tracking-tighter leading-none",
-      "h2": "text-3xl sm:text-4xl tracking-tight",
-      "h3": "text-xl sm:text-2xl tracking-tight",
-      "body": "text-base",
-      "small": "text-sm",
-      "overline": "text-xs font-bold uppercase tracking-[0.2em]"
+    "font_urls": [
+      "https://fonts.googleapis.com/css2?family=Epilogue:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+    ],
+    "scale": {
+      "h1": "text-5xl sm:text-6xl tracking-tighter leading-[1.1] font-black",
+      "h2": "text-3xl sm:text-4xl tracking-tight leading-tight font-extrabold",
+      "h3": "text-xl sm:text-2xl tracking-tight leading-snug font-bold",
+      "h4": "text-lg sm:text-xl tracking-tight leading-snug font-semibold",
+      "body_lg": "text-lg leading-relaxed font-medium",
+      "body": "text-base leading-relaxed font-medium",
+      "body_sm": "text-sm leading-normal font-medium text-muted-foreground",
+      "caption": "text-xs tracking-[0.02em] font-semibold uppercase text-muted-foreground"
     }
   },
-  "color_palette": {
-    "light_mode": {
-      "background_base": "#F6F5F2",
-      "background_surface": "#FFFFFF",
-      "primary": "#D4C5FF",
-      "primary_foreground": "#111111",
-      "secondary": "#E0F4E8",
-      "secondary_foreground": "#111111",
-      "accent": "#FFF4B3",
-      "accent_foreground": "#111111",
-      "text_main": "#1A1A1A",
-      "text_muted": "#666666",
-      "border": "rgba(0, 0, 0, 0.08)",
-      "chat_bubble_sent": "#D4C5FF",
-      "chat_bubble_received": "#FFFFFF"
+  "colors": {
+    "light": {
+      "background": "45 20% 98%",
+      "foreground": "240 10% 10%",
+      "card": "0 0% 100%",
+      "card-foreground": "240 10% 10%",
+      "popover": "0 0% 100%",
+      "popover-foreground": "240 10% 10%",
+      "primary": "356 100% 67%",
+      "primary-foreground": "0 0% 100%",
+      "secondary": "160 90% 43%",
+      "secondary-foreground": "240 10% 10%",
+      "muted": "45 10% 92%",
+      "muted-foreground": "240 5% 45%",
+      "accent": "45 100% 65%",
+      "accent-foreground": "240 10% 10%",
+      "destructive": "0 84% 60%",
+      "destructive-foreground": "0 0% 100%",
+      "border": "240 10% 85%",
+      "input": "240 10% 85%",
+      "ring": "356 100% 67%",
+      "sidebar": "45 20% 98%",
+      "sidebar-foreground": "240 10% 10%"
     },
-    "dark_mode": {
-      "background_base": "#0D0D12",
-      "background_surface": "#16161D",
-      "primary": "#A992EB",
-      "primary_foreground": "#FFFFFF",
-      "secondary": "#2A3A32",
-      "secondary_foreground": "#E0F4E8",
-      "accent": "#4A462B",
-      "accent_foreground": "#FFF4B3",
-      "text_main": "#F0F0F0",
-      "text_muted": "#8A8A93",
-      "border": "rgba(255, 255, 255, 0.1)",
-      "chat_bubble_sent": "#A992EB",
-      "chat_bubble_received": "#23232E"
+    "dark": {
+      "background": "240 10% 6%",
+      "foreground": "0 0% 98%",
+      "card": "240 10% 9%",
+      "card-foreground": "0 0% 98%",
+      "popover": "240 10% 9%",
+      "popover-foreground": "0 0% 98%",
+      "primary": "356 100% 67%",
+      "primary-foreground": "0 0% 100%",
+      "secondary": "160 90% 43%",
+      "secondary-foreground": "0 0% 98%",
+      "muted": "240 10% 15%",
+      "muted-foreground": "240 5% 65%",
+      "accent": "45 100% 65%",
+      "accent-foreground": "240 10% 10%",
+      "destructive": "0 62.8% 30.6%",
+      "destructive-foreground": "0 0% 98%",
+      "border": "240 10% 15%",
+      "input": "240 10% 15%",
+      "ring": "356 100% 67%",
+      "sidebar": "240 10% 6%",
+      "sidebar-foreground": "0 0% 98%"
     }
   },
-  "spacing_and_layout": {
-    "philosophy": "Generous Spacing + Optical Alignment",
-    "marketing_layout": {
-      "grid_type": "MODE A: THE 'TETRIS' GRID",
-      "classes": "grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12",
-      "container": "max-w-7xl mx-auto px-6 lg:px-12 py-24"
+  "radii": {
+    "none": "0",
+    "sm": "0.375rem",
+    "md": "0.625rem",
+    "lg": "0.875rem",
+    "xl": "1.25rem",
+    "2xl": "1.5rem",
+    "full": "9999px"
+  },
+  "spacing_rhythm": {
+    "page_padding": "px-6 md:px-12 lg:px-24 py-12 md:py-24",
+    "section_gap": "gap-24 md:gap-32",
+    "component_gap": "gap-6 md:gap-8",
+    "card_padding": "p-6 sm:p-8"
+  },
+  "motion": {
+    "spring": {
+      "stiffness": 400,
+      "damping": 30,
+      "mass": 1
     },
-    "app_layout": {
-      "grid_type": "MODE B: THE 'CONTROL ROOM' GRID",
-      "structure": "3-column hybrid layout (Sidebar: 320px fixed, Main Chat: fluid, Details: 300px fixed/collapsible).",
-      "classes": "flex h-screen overflow-hidden bg-background",
-      "padding": "p-0"
+    "easings": {
+      "snappy": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+      "smooth": "cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "patterns": {
+      "hover_card": "hover:-translate-y-1 hover:shadow-xl transition-all duration-300",
+      "button_tap": "active:scale-95 transition-transform",
+      "page_entrance": "initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.5, ease: 'snappy' }"
     }
   },
-  "surface_styles": {
-    "cards_and_containers": {
-      "style": "Neumorphism (The 'Tactile' Variant) mixed with Neo-Brutalism",
-      "classes": "bg-white dark:bg-[#16161D] rounded-2xl border border-black/5 dark:border-white/10 shadow-sm transition-all duration-200"
-    },
-    "glassmorphism": {
-      "usage": "Sticky headers and floating navigation",
-      "classes": "backdrop-blur-xl bg-white/70 dark:bg-black/60 border-b border-black/5 dark:border-white/10 shadow-sm backdrop-saturate-150"
-    },
+  "component_patterns": {
     "chat_bubbles": {
-      "sent": "rounded-2xl rounded-tr-sm bg-primary text-primary-foreground px-4 py-2",
-      "received": "rounded-2xl rounded-tl-sm bg-background-surface border border-border text-text-main px-4 py-2 shadow-sm"
+      "sent": "bg-primary text-primary-foreground rounded-2xl rounded-br-sm px-4 py-2.5 max-w-[75%] shadow-sm",
+      "received": "bg-muted text-foreground rounded-2xl rounded-bl-sm px-4 py-2.5 max-w-[75%] border border-border/50",
+      "grouping": "First message in group has full radius, last message has sharp corner pointing to sender"
+    },
+    "composer": {
+      "wrapper": "flex items-end gap-2 p-4 bg-background/80 backdrop-blur-md border-t border-border",
+      "input": "min-h-[44px] max-h-[120px] bg-muted/50 border-transparent focus-visible:ring-primary rounded-xl px-4 py-3 resize-none",
+      "send_button": "h-11 w-11 rounded-full bg-primary text-primary-foreground shadow-md hover:scale-105 active:scale-95 transition-transform flex items-center justify-center shrink-0"
+    },
+    "sidebar_list": {
+      "item_active": "bg-muted/80 border-l-2 border-primary rounded-r-lg",
+      "item_inactive": "hover:bg-muted/50 rounded-lg border-l-2 border-transparent transition-colors",
+      "avatar": "h-12 w-12 rounded-full ring-2 ring-background",
+      "presence_dot": "absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full ring-2 ring-background bg-secondary"
+    },
+    "call_window": {
+      "fullscreen": "fixed inset-0 z-50 bg-background/95 backdrop-blur-xl flex flex-col items-center justify-center",
+      "pip": "absolute bottom-8 right-8 w-48 h-72 rounded-2xl overflow-hidden shadow-2xl border border-border",
+      "controls": "absolute bottom-12 flex items-center gap-6 p-4 rounded-full bg-background/20 backdrop-blur-md border border-white/10"
+    },
+    "landing_bento": {
+      "grid": "grid grid-cols-1 md:grid-cols-8 lg:grid-cols-12 gap-6",
+      "card": "bg-card border border-border rounded-2xl p-8 relative overflow-hidden group hover:border-primary/50 transition-colors"
     }
   },
-  "components": {
-    "buttons": {
-      "primary": "bg-primary text-primary-foreground hover:bg-primary/90 font-bold rounded-xl px-6 py-3 transition-transform hover:-translate-y-0.5 shadow-sm",
-      "secondary": "bg-background-surface border border-border text-text-main hover:bg-gray-50 dark:hover:bg-gray-800 font-bold rounded-xl px-6 py-3 transition-colors"
+  "implementation_plan": [
+    {
+      "step": 1,
+      "title": "Setup & Theming Core",
+      "description": "Initialize Tailwind config with HSL variables. Inject Epilogue and Plus Jakarta Sans fonts. Build the CSS variable architecture to support robust Light/Dark mode switching following OS preference. Set up Shadcn UI globals."
     },
-    "inputs": {
-      "default": "bg-transparent border border-border rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all placeholder:text-text-muted"
+    {
+      "step": 2,
+      "title": "Base Layout & Navigation",
+      "description": "Implement the core application shell (Sidebar + Main Content Area + Context Panel). Build out the sliding panel logic and global state for theme toggling. Add Framer Motion context providers."
     },
-    "badges": {
-      "unread": "bg-accent text-accent-foreground font-bold rounded-full px-2 py-0.5 text-xs shadow-sm"
+    {
+      "step": 3,
+      "title": "Marketing & Auth Pages",
+      "description": "Develop the Landing Page featuring an asymmetric Bento grid, animated hero text, and smooth scrolling. Implement Login and Register split-screen pages with vibrant art panels and custom Shadcn input fields."
+    },
+    {
+      "step": 4,
+      "title": "Main Chat Interface",
+      "description": "Build the 3-column chat UI. Create highly-polished chat bubble components (sent/received with border-radius grouping). Implement the composer textarea with auto-resize, and the sidebar list with presence indicators."
+    },
+    {
+      "step": 5,
+      "title": "Micro-interactions & Polish",
+      "description": "Integrate Framer Motion for entering message bubbles, a 3-dot typing indicator, hover/active states on all interactive elements, and sonner toasts for notifications."
+    },
+    {
+      "step": 6,
+      "title": "Call Window & Overlays",
+      "description": "Construct the full-screen audio/video Call Window with a PiP (Picture-in-Picture) self-view, glassmorphic floating control buttons, and the top-right incoming call floating card."
     }
+  ],
+  "media_assets": {
+    "hero_backgrounds": [
+      {
+        "url": "https://images.unsplash.com/photo-1602475063211-3d98d60e3b1f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzV8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGdyYWluJTIwdGV4dHVyZXxlbnwwfHx8fDE3ODEyNzY5NzF8MA&ixlib=rb-4.1.0&q=85",
+        "description": "Dark grain texture, suitable for premium dark mode backgrounds or landing page hero overlay."
+      }
+    ],
+    "social_context": [
+      {
+        "url": "https://images.unsplash.com/photo-1758874385535-bd209562d2cf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NzN8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBvZmZpY2UlMjBzb2NpYWx8ZW58MHx8fHwxNzgxMjc2OTcxfDA&ixlib=rb-4.1.0&q=85",
+        "description": "Young man smiling looking at smartphone in modern office setting. Great for landing page imagery."
+      }
+    ],
+    "avatars": [
+      {
+        "url": "https://images.unsplash.com/photo-1716569355086-6caed45f6855?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwxfHxjcmVhdGl2ZSUyMHBvcnRyYWl0JTIweW91bmd8ZW58MHx8fHwxNzgxMjc2OTY0fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Woman with dreadlocks, creative lighting. Profile picture."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1636486183541-83634a8dc9a7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHwzfHxjcmVhdGl2ZSUyMHBvcnRyYWl0JTIweW91bmd8ZW58MHx8fHwxNzgxMjc2OTY0fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Close up of person with long hair, warm lighting. Profile picture."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1598728637989-9c5de7532584?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1NzZ8MHwxfHNlYXJjaHw0fHxjcmVhdGl2ZSUyMHBvcnRyYWl0JTIweW91bmd8ZW58MHx8fHwxNzgxMjc2OTY0fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Boy in blue denim jacket. Profile picture."
+      }
+    ]
   },
-  "motion_and_interactions": {
-    "libraries": ["framer-motion"],
-    "hover_states": "All interactive elements MUST change appearance on hover. Lift cards slightly (-translate-y-1) and increase shadow.",
-    "page_transitions": "Subtle fade and slide-up (y: 10 to y: 0) with opacity 0 to 1.",
-    "microinteractions": {
-      "typing_indicator": "Three bouncing dots with staggered animation.",
-      "message_appear": "Framer motion scale-up from origin (bottom-right for sent, bottom-left for received)."
-    }
-  },
-  "media_and_assets": {
-    "icons": {
-      "library": "lucide-react",
-      "guidelines": "Use stroke-width 1.5 for a clean, delicate appearance. Do not mix filled and outlined icons randomly."
-    },
-    "images": {
-      "hero_image": "https://images.unsplash.com/photo-1758525589202-5b3a256b545e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2OTV8MHwxfHNlYXJjaHwzfHxwZW9wbGUlMjBjaGF0dGluZyUyMG1vYmlsZSUyMHBob25lJTIwc3Vuc2V0fGVufDB8fHx8MTc4MTI3MzA5NXww&ixlib=rb-4.1.0&q=85",
-      "marketing_background": "https://images.unsplash.com/photo-1761888857629-aa3f306f6bee?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODF8MHwxfHNlYXJjaHwzfHxhYnN0cmFjdCUyMGdlb21ldHJpYyUyMHBhc3RlbCUyMGJhY2tncm91bmR8ZW58MHx8fHwxNzgxMjczMDk1fDA&ixlib=rb-4.1.0&q=85",
-      "empty_state_art": "https://images.pexels.com/photos/12732215/pexels-photo-12732215.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
-      "avatars": [
-        "https://images.unsplash.com/photo-1623717217554-72ca676de535?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxwcm9maWxlJTIwcG9ydHJhaXQlMjBzbWlsaW5nfGVufDB8fHx8MTc4MTI3MzA5NXww&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1562124638-724e13052daf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwxfHxwcm9maWxlJTIwcG9ydHJhaXQlMjBzbWlsaW5nfGVufDB8fHx8MTc4MTI3MzA5NXww&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1501512978622-c40414652f02?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHw0fHxwcm9maWxlJTIwcG9ydHJhaXQlMjBzbWlsaW5nfGVufDB8fHx8MTc4MTI3MzA5NXww&ixlib=rb-4.1.0&q=85",
-        "https://images.unsplash.com/photo-1562337404-3044c84ac061?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwzfHxwcm9maWxlJTIwcG9ydHJhaXQlMjBzbWlsaW5nfGVufDB8fHx8MTc4MTI3MzA5NXww&ixlib=rb-4.1.0&q=85"
-      ]
-    }
-  },
-  "page_specific_guidelines": {
-    "landing_page": {
-      "hero_section": "Asymmetrical layout. Massive H1 on the left (text-5xl to text-7xl), right side features a dynamic floating bento grid of chat UI fragments over the `marketing_background`. Never center everything.",
-      "features": "Bento Grid (Mode A). Use generous padding (p-8 to p-12) inside cards. High contrast visuals.",
-      "cta": "Large geometric container, pastel background, heavy bold typography prompting user to 'Start Chatting'."
-    },
-    "authentication": {
-      "layout": "Split screen. Left side: Abstract pastel geometric art or brand messaging. Right side: Clean, form-focused login/register. No noisy backgrounds behind the form.",
-      "form": "Use the 'Tactile' card style. Inputs must have clear focus states."
-    },
-    "chat_application": {
-      "sidebar": "Collapsible on mobile. Contains search bar (rounded-xl) and list of conversations. Use progressive disclosure: hover over a chat to reveal pin/archive actions.",
-      "conversation_window": "Header is glassmorphism. Background is `background_base`. Input area is fixed at bottom with blur effect. Messages use high-contrast bubbles.",
-      "profile_panel": "Right-side drawer. Shows avatar, media gallery grid, and settings. Use minimalist list rows with crisp bottom borders."
-    }
-  },
-  "accessibility_and_testing": {
-    "contrast": "Ensure primary text meets 4.5:1 ratio. The primary button text MUST be #111111 to contrast with the pastel #D4C5FF background.",
-    "testing_attributes": "All interactive elements MUST have a `data-testid` attribute (e.g., `data-testid=\"send-message-button\"`, `data-testid=\"chat-list-item-user1\"`).",
-    "focus_states": "Visible focus rings on all inputs and buttons (`focus:ring-2 focus:ring-primary`)."
+  "testing": {
+    "requirements": "All interactive elements (buttons, inputs, menu items) MUST use data-testid attributes with role-based kebab-case naming (e.g., data-testid='chat-send-button', data-testid='theme-toggle-button')."
   }
 }
