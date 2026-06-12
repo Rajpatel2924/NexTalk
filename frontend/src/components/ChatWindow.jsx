@@ -255,7 +255,20 @@ export default function ChatWindow({ onOpenInfo, onBack }) {
       toast.success(`Calling ${other.name}…`);
     } catch (err) {
       console.warn("[ChatWindow] startCall failed:", err);
-      toast.error(err?.message || "Couldn't start call");
+      const message = err?.message || "Couldn't start call";
+      let inIframe = false;
+      try { inIframe = window.self !== window.top; } catch (_) { inIframe = true; }
+      if (inIframe) {
+        toast.error(message, {
+          duration: 8000,
+          action: {
+            label: "Open in new tab",
+            onClick: () => window.open(window.location.href, "_blank", "noopener,noreferrer"),
+          },
+        });
+      } else {
+        toast.error(message, { duration: 6000 });
+      }
     }
   };
 

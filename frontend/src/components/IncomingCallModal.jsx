@@ -19,7 +19,22 @@ export default function IncomingCallModal() {
 
   const onAccept = async () => {
     try { await acceptIncoming(); }
-    catch (err) { toast.error(err.message || "Couldn't start call"); }
+    catch (err) {
+      const message = err?.message || "Couldn't start call";
+      let inIframe = false;
+      try { inIframe = window.self !== window.top; } catch (_) { inIframe = true; }
+      if (inIframe) {
+        toast.error(message, {
+          duration: 8000,
+          action: {
+            label: "Open in new tab",
+            onClick: () => window.open(window.location.href, "_blank", "noopener,noreferrer"),
+          },
+        });
+      } else {
+        toast.error(message, { duration: 6000 });
+      }
+    }
   };
 
   return (

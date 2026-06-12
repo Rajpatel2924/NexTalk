@@ -18,11 +18,53 @@ function newCallId() {
 }
 
 async function getLocalMedia(callType) {
+  // Surface a clear error when getUserMedia isn't available at all
+  // (e.g. running on http://, inside a restricted iframe, or very old browser).
+  if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== "function") {
+    const err = new Error("MEDIA_UNAVAILABLE");
+    err.name = "NotSupportedError";
+    throw err;
+  }
   const constraints = {
     audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
     video: callType === "video" ? { width: { ideal: 1280 }, height: { ideal: 720 } } : false,
   };
   return await navigator.mediaDevices.getUserMedia(constraints);
+}
+
+function isInIframe() {
+  try { return window.self !== window.top; } catch (_) { return true; }
+}
+
+function explainMediaError(err, callType) {
+  const name = err?.name || "";
+  const inIframe = isInIframe();
+  // Iframe Permissions-Policy blocks getUserMedia by default unless the parent
+  // explicitly grants `camera` / `microphone`. This is the #1 reason calls
+  // fail in the Emergent preview pane.
+  if (inIframe && (name === "NotAllowedError" || name === "SecurityError" || name === "NotSupportedError")) {
+    return "Preview can’t access camera/mic. Open the app in a new tab to make calls.";
+  }
+  switch (name) {
+    case "NotAllowedError":
+      return "Permission denied. Click the camera/mic icon in your browser's address bar to allow access.";
+    case "NotFoundError":
+      return callType === "video"
+        ? "No camera or microphone found on this device."
+        : "No microphone found on this device.";
+    case "NotReadableError":
+      return "Camera or microphone is already in use by another app.";
+    case "OverconstrainedError":
+      return "Your device doesn't support the requested call quality.";
+    case "SecurityError":
+      return "Calls require a secure (HTTPS) connection.";
+    case "NotSupportedError":
+      return "Your browser doesn't support voice/video calls.";
+    default:
+      return callType === "video"
+        ? "Couldn't access camera/microphone."
+        : "Couldn't access microphone.";
+  }
 }
 
 function attachPCHandlers({ remoteUserId, callId }) {
@@ -76,9 +118,12 @@ export async function startCall({ remoteUser, conversationId, callType }) {
   try {
     localStream = await getLocalMedia(callType);
   } catch (err) {
-    console.warn("[call] getUserMedia failed:", err);
+    console.warn("[call] getUserMedia failed:", err?.name, err?.message);
     cleanup();
-    throw new Error(callType === "video" ? "Camera/mic permission denied" : "Microphone permission denied");
+    const msg = explainMediaError(err, callType);
+    const e = new Error(msg);
+    e.cause = err;
+    throw e;
   }
   useCall.getState().setLocalStream(localStream);
 
@@ -116,9 +161,12 @@ export async function acceptIncoming() {
   try {
     localStream = await getLocalMedia(callType);
   } catch (err) {
-    console.warn("[call] getUserMedia failed:", err);
+    console.warn("[call] getUserMedia failed:", err?.name, err?.message);
+    const msg = explainMediaError(err, callType);
     rejectIncoming();
-    throw new Error(callType === "video" ? "Camera/mic permission denied" : "Microphone permission denied");
+    const e = new Error(msg);
+    e.cause = err;
+    throw e;
   }
   useCall.getState().setLocalStream(localStream);
 
