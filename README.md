@@ -24,25 +24,18 @@ Built with scalability, responsiveness, and real-time communication in mind.
 
 ---
 
-# 🌐 Live Demo
+<div align="center">
 
-### Frontend (Vercel)
+## 🌐 Live Deployment
 
-Add your deployed frontend URL here
+<a href="https://nex-talk-2k26.vercel.app">
+  <img src="https://img.shields.io/badge/🚀_Launch_NexTalk-Live_Demo-blue?style=for-the-badge">
+</a>
+<br><br>
 
-```text
-https://your-vercel-app.vercel.app
-```
+**Frontend:** Vercel • **Backend:** Render • **Real-Time:** Socket.IO
 
-### Backend API (Render)
-
-Add your deployed backend URL here
-
-```text
-https://your-render-service.onrender.com
-```
-
----
+</div>
 
 # ✨ Features
 
@@ -460,7 +453,7 @@ GitHub:
 https://github.com/Rajpatel2924
 
 LinkedIn:
-Add your LinkedIn profile here
+https://www.linkedin.com/in/rajpatel2924/
 
 ---
 
