@@ -46,28 +46,10 @@ export default function CallWindow() {
   useEffect(() => {
   if (!remoteStream) return;
 
-  console.log(
-    "[CallWindow] Remote stream received",
-    remoteStream.getTracks()
-  );
-
   if (remoteVideoRef.current) {
-  remoteVideoRef.current.srcObject = remoteStream;
+    remoteVideoRef.current.srcObject = remoteStream;
+  }
 
-  console.log(
-    "[VIDEO ELEMENT]",
-    remoteVideoRef.current.videoWidth,
-    remoteVideoRef.current.videoHeight
-  );
-
-  remoteVideoRef.current.onloadedmetadata = () => {
-    console.log(
-      "[REMOTE VIDEO LOADED]",
-      remoteVideoRef.current.videoWidth,
-      remoteVideoRef.current.videoHeight
-    );
-  };
-}
   if (remoteAudioRef.current) {
     remoteAudioRef.current.srcObject = remoteStream;
   }
