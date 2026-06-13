@@ -27,7 +27,8 @@ import os
 
 mongo_url = os.getenv("MONGO_URL")
 
-print("MONGO_URL =", mongo_url)
+if not mongo_url:
+    raise RuntimeError("MONGO_URL environment variable is missing")
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ["DB_NAME"]]
 
