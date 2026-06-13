@@ -6,11 +6,14 @@ import { sendWS } from "@/lib/ws";
 import { useCall } from "@/store/useCall";
 
 const ICE_SERVERS = [
-  { urls: "stun:stun.l.google.com:19302" },
-  { urls: "stun:stun1.l.google.com:19302" },
-  { urls: "stun:stun2.l.google.com:19302" },
-  { urls: "stun:stun3.l.google.com:19302" },
-  { urls: "stun:stun4.l.google.com:19302" },
+  {
+    urls: "stun:stun.l.google.com:19302",
+  },
+  {
+    urls: "turn:global.relay.metered.ca:80",
+    username: "YOUR_USERNAME",
+    credential: "YOUR_PASSWORD",
+  },
 ];
 let pc = null;
 let pendingCandidates = []; // ICE candidates that arrived before remote description was set
