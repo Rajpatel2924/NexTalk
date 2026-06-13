@@ -8,8 +8,10 @@ import { useCall } from "@/store/useCall";
 const ICE_SERVERS = [
   { urls: "stun:stun.l.google.com:19302" },
   { urls: "stun:stun1.l.google.com:19302" },
+  { urls: "stun:stun2.l.google.com:19302" },
+  { urls: "stun:stun3.l.google.com:19302" },
+  { urls: "stun:stun4.l.google.com:19302" },
 ];
-
 let pc = null;
 let pendingCandidates = []; // ICE candidates that arrived before remote description was set
 
@@ -69,6 +71,8 @@ function explainMediaError(err, callType) {
 
 function attachPCHandlers({ remoteUserId, callId }) {
   pc.onicecandidate = (e) => {
+    console.log("[WebRTC] ICE candidate:", e.candidate);
+
     if (e.candidate) {
       sendWS({
         type: "call_ice",
@@ -78,16 +82,36 @@ function attachPCHandlers({ remoteUserId, callId }) {
       });
     }
   };
+
   pc.ontrack = (e) => {
+    console.log("[WebRTC] Remote track received");
+
     const [stream] = e.streams;
     useCall.getState().setRemoteStream(stream);
   };
+
+  pc.oniceconnectionstatechange = () => {
+    console.log(
+      "[WebRTC] ICE state:",
+      pc?.iceConnectionState
+    );
+  };
+
   pc.onconnectionstatechange = () => {
+    console.log(
+      "[WebRTC] Connection state:",
+      pc?.connectionState
+    );
+
     const s = pc.connectionState;
+
     if (s === "connected") {
       useCall.getState().setConnected();
-    } else if (s === "failed" || s === "disconnected" || s === "closed") {
-      // Auto-end on disconnect
+    } else if (
+      s === "failed" ||
+      s === "disconnected" ||
+      s === "closed"
+    ) {
       endCall({ notify: false });
     }
   };
@@ -184,7 +208,9 @@ export async function acceptIncoming() {
 
     const answer = await pc.createAnswer();
     await pc.setLocalDescription(answer);
-
+    console.log(
+  "[WebRTC] Sending answer to:",
+  remoteUser.id );
     sendWS({
       type: "call_answer",
       to: remoteUser.id,
@@ -234,9 +260,25 @@ export function handleCallEvent(evt) {
       conversationId: evt.conversationId,
     });
   } else if (evt.type === "call_answer") {
-    if (!pc || evt.callId !== state.callId) return;
-    pc.setRemoteDescription(evt.sdp).catch((e) => console.warn("[call] setRemoteDescription failed:", e));
-    state.setStatus("connecting");
+  console.log("[WebRTC] Received answer", evt);
+
+  if (!pc || evt.callId !== state.callId) {
+    console.warn("[WebRTC] Ignoring answer");
+    return;
+  }
+
+  pc.setRemoteDescription(evt.sdp)
+    .then(() => {
+      console.log("[WebRTC] Remote description set");
+    })
+    .catch((e) => {
+      console.warn(
+        "[call] setRemoteDescription failed:",
+        e
+      );
+    });
+
+  state.setStatus("connecting");
   } else if (evt.type === "call_ice") {
     if (!pc) return;
     const cand = evt.candidate;
