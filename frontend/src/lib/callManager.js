@@ -150,6 +150,19 @@ export async function startCall({ remoteUser, conversationId, callType }) {
   let localStream;
   try {
     localStream = await getLocalMedia(callType);
+
+  console.log(
+    "[WebRTC] Caller local tracks:",
+    localStream.getTracks().map(t => ({
+      kind: t.kind,
+      enabled: t.enabled
+    }))
+  );
+
+  console.log(
+    "[WebRTC] Caller call type:",
+    callType
+  );
   } catch (err) {
     console.warn("[call] getUserMedia failed:", err?.name, err?.message);
     cleanup();
@@ -193,6 +206,19 @@ export async function acceptIncoming() {
   let localStream;
   try {
     localStream = await getLocalMedia(callType);
+
+  console.log(
+    "[WebRTC] Callee local tracks:",
+    localStream.getTracks().map(t => ({
+      kind: t.kind,
+      enabled: t.enabled
+    }))
+  );
+
+  console.log(
+    "[WebRTC] Callee call type:",
+    callType
+  );
   } catch (err) {
     console.warn("[call] getUserMedia failed:", err?.name, err?.message);
     const msg = explainMediaError(err, callType);
@@ -254,6 +280,10 @@ export function handleCallEvent(evt) {
   const state = useCall.getState();
 
   if (evt.type === "call_offer") {
+    console.log(
+    "[WebRTC] Incoming offer type:",
+    evt.callType
+  );
     // Reject if already in a call
     if (state.status !== "idle") {
       sendWS({ type: "call_reject", to: evt.from, callId: evt.callId });
