@@ -360,41 +360,63 @@ Optimized application-wide state updates using Zustand to maintain a responsive 
 
 ---
 
-# 📸 Screenshots
+<h2 align="center">📸 Application Screenshots</h2>
 
-## Authentication
 
-Add screenshot here
+<table align="center">
+<tr>
+<td align="center" width="50%">
+<img src="Screenshots/assets/login.png" width="95%">
 
-```text
-assets/login.png
-```
+<br><br>
 
-## Chat Interface
+<b>🔐 Authentication System</b>
 
-Add screenshot here
+Secure JWT-based login and registration with protected routes and persistent sessions.
 
-```text
-assets/chat.png
-```
+</td>
 
-## Voice & Video Calling
+<td align="center" width="50%">
+<img src="Screenshots/assets/chat.png" width="95%">
 
-Add screenshot here
+<br><br>
 
-```text
-assets/call.png
-```
+<b>💬 Real-Time Chat Interface</b>
 
-## Dark Mode
+Instant messaging with typing indicators, read receipts, and online presence tracking.
 
-Add screenshot here
+</td>
+</tr>
 
-```text
-assets/darkmode.png
-```
+<tr>
+<td height="30"></td>
+<td></td>
+</tr>
 
----
+<tr>
+<td align="center" width="50%">
+<img src="Screenshots/assets/call.png" width="95%">
+
+<br><br>
+
+<b>📞 Voice & Video Calling</b>
+
+Peer-to-peer calling experience with real-time Socket.IO signaling.
+
+</td>
+
+<td align="center" width="50%">
+<img src="Screenshots/assets/darkmode.png" width="95%">
+
+<br><br>
+
+<b>🌙 Modern Dark Theme</b>
+
+Clean and responsive dark mode optimized for desktop, tablet, and mobile devices.
+
+</td>
+</tr>
+</table>
 
 # 🚀 Future Enhancements
 
