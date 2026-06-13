@@ -62,15 +62,6 @@ export default function CallWindow() {
     status === "outgoing" ? "Ringing…" :
     status === "connecting" ? "Connecting…" :
     elapsed || "Connected";
-  console.log(
-  "[CallWindow] Video Tracks:",
-  remoteStream?.getVideoTracks()?.length
-);
-
-console.log(
-  "[CallWindow] Audio Tracks:",
-  remoteStream?.getAudioTracks()?.length
-);
 
   return (
     <AnimatePresence>
