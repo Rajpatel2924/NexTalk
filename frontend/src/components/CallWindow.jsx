@@ -38,13 +38,39 @@ export default function CallWindow() {
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
+  const remoteAudioRef = useRef(null);
 
   useEffect(() => {
     if (localVideoRef.current && localStream) localVideoRef.current.srcObject = localStream;
   }, [localStream]);
   useEffect(() => {
-    if (remoteVideoRef.current && remoteStream) remoteVideoRef.current.srcObject = remoteStream;
-  }, [remoteStream]);
+  if (!remoteStream) return;
+
+  console.log(
+    "[CallWindow] Remote stream received",
+    remoteStream.getTracks()
+  );
+
+  if (remoteVideoRef.current) {
+    remoteVideoRef.current.srcObject = remoteStream;
+
+    remoteVideoRef.current
+      .play()
+      .catch((e) =>
+        console.warn("[CallWindow] Video play failed:", e)
+      );
+  }
+
+  if (remoteAudioRef.current) {
+    remoteAudioRef.current.srcObject = remoteStream;
+
+    remoteAudioRef.current
+      .play()
+      .catch((e) =>
+        console.warn("[CallWindow] Audio play failed:", e)
+      );
+  }
+}, [remoteStream]);
 
   const visible = status === "outgoing" || status === "connecting" || status === "connected";
   if (!visible) return null;
@@ -107,7 +133,11 @@ export default function CallWindow() {
             />
           )}
         </div>
-
+        <audio
+  ref={remoteAudioRef}
+  autoPlay
+  playsInline
+/>
         {/* Controls (glass capsule) */}
         <div className="flex items-center gap-3 p-2 rounded-full bg-background/15 backdrop-blur-xl border border-background/15 shadow-2xl">
           <button
