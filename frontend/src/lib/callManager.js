@@ -92,9 +92,13 @@ function attachPCHandlers({ remoteUserId, callId }) {
   const [stream] = e.streams;
 
   console.log(
-    "[WebRTC] Stream tracks:",
-    stream.getTracks()
-  );
+  "[WebRTC] Stream tracks:",
+  stream.getTracks().map((t) => ({
+    kind: t.kind,
+    enabled: t.enabled,
+    readyState: t.readyState,
+  }))
+);
 
   useCall.getState().setRemoteStream(stream);
 };
@@ -176,8 +180,21 @@ export async function startCall({ remoteUser, conversationId, callType }) {
   try {
     pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     attachPCHandlers({ remoteUserId: remoteUser.id, callId });
-    localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+    localStream.getTracks().forEach((t) => {
+  console.log(
+    "[WebRTC] Adding track:",
+    t.kind
+  );
 
+  pc.addTrack(t, localStream);
+});
+
+console.log(
+  "[WebRTC] Senders:",
+  pc.getSenders().map((s) => ({
+    kind: s.track?.kind
+  }))
+);
     const offer = await pc.createOffer({ offerToReceiveAudio: true, offerToReceiveVideo: callType === "video" });
     await pc.setLocalDescription(offer);
 
@@ -232,8 +249,15 @@ export async function acceptIncoming() {
   try {
     pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
     attachPCHandlers({ remoteUserId: remoteUser.id, callId });
-    localStream.getTracks().forEach((t) => pc.addTrack(t, localStream));
+    localStream.getTracks().forEach((t) => {
+  console.log("[WebRTC] Adding track:", t.kind);
+  pc.addTrack(t, localStream);
+});
 
+console.log(
+  "[WebRTC] Senders:",
+  pc.getSenders().map((s) => s.track?.kind)
+);
     await pc.setRemoteDescription(_pendingOffer);
     // flush ICE candidates that arrived before remote description was set
     while (pendingCandidates.length) {
