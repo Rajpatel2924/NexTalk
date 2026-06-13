@@ -52,26 +52,26 @@ export default function CallWindow() {
   );
 
   if (remoteVideoRef.current) {
-    remoteVideoRef.current.srcObject = remoteStream;
+  remoteVideoRef.current.srcObject = remoteStream;
 
-    remoteVideoRef.current
-      .play()
-      .catch((e) =>
-        console.warn("[CallWindow] Video play failed:", e)
-      );
-  }
+  console.log(
+    "[VIDEO ELEMENT]",
+    remoteVideoRef.current.videoWidth,
+    remoteVideoRef.current.videoHeight
+  );
 
+  remoteVideoRef.current.onloadedmetadata = () => {
+    console.log(
+      "[REMOTE VIDEO LOADED]",
+      remoteVideoRef.current.videoWidth,
+      remoteVideoRef.current.videoHeight
+    );
+  };
+}
   if (remoteAudioRef.current) {
     remoteAudioRef.current.srcObject = remoteStream;
-
-    remoteAudioRef.current
-      .play()
-      .catch((e) =>
-        console.warn("[CallWindow] Audio play failed:", e)
-      );
   }
 }, [remoteStream]);
-
   const visible = status === "outgoing" || status === "connecting" || status === "connected";
   if (!visible) return null;
 
@@ -80,6 +80,15 @@ export default function CallWindow() {
     status === "outgoing" ? "Ringing…" :
     status === "connecting" ? "Connecting…" :
     elapsed || "Connected";
+  console.log(
+  "[CallWindow] Video Tracks:",
+  remoteStream?.getVideoTracks()?.length
+);
+
+console.log(
+  "[CallWindow] Audio Tracks:",
+  remoteStream?.getAudioTracks()?.length
+);
 
   return (
     <AnimatePresence>
@@ -103,15 +112,15 @@ export default function CallWindow() {
 
         {/* Body */}
         <div className="flex-1 w-full max-w-5xl flex items-center justify-center my-6 relative">
-          {isVideo && remoteStream ? (
-            <video
-              ref={remoteVideoRef}
-              autoPlay
-              playsInline
-              className="w-full h-full max-h-[70vh] rounded-3xl object-cover bg-black"
-              data-testid="remote-video"
-            />
-          ) : (
+          {isVideo ? (
+  <video
+    ref={remoteVideoRef}
+    autoPlay
+    playsInline
+    className="w-full h-full max-h-[70vh] rounded-3xl object-cover bg-black"
+    data-testid="remote-video"
+  />
+) : (
             <div className="flex flex-col items-center justify-center">
               <div className="relative">
                 <Avatar src={remoteUser?.avatar} name={remoteUser?.name} size={160} />
