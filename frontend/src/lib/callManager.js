@@ -11,8 +11,8 @@ const ICE_SERVERS = [
   },
   {
     urls: "turn:global.relay.metered.ca:80",
-    username: "YOUR_USERNAME",
-    credential: "YOUR_PASSWORD",
+    username: "087928a25cb9195a4a0c3f2d",
+    credential: "PK3vXSyb6Lx5GXS8",
   },
 ];
 let pc = null;
@@ -342,27 +342,23 @@ export function handleCallEvent(evt) {
   }
 
   pc.setRemoteDescription(evt.sdp)
-    .then(() => {
-      console.log("[WebRTC] Remote description set");
-    if (pc.connectionState === "connected") {
-        state.setConnected();
-      }
-    })
-    .catch((e) => {
-      console.warn(
-        "[call] setRemoteDescription failed:",
-        e
-      );
-    });
-
-  state.setStatus("connecting");
+  .then(() => {
+    console.log("[WebRTC] Remote description set");
+  })
+  .catch((e) => {
+    console.warn("[call] setRemoteDescription failed:", e);
+  });
   } else if (evt.type === "call_ice") {
     if (!pc) return;
-    const cand = evt.candidate;
-    if (!pc.remoteDescription) {
-      pendingCandidates.push(cand);
-    } else {
-      pc.addIceCandidate(cand).catch((e) => console.warn("[call] addIceCandidate failed:", e));
+    const candidate = new RTCIceCandidate(evt.candidate);
+
+if (!pc.remoteDescription) {
+  pendingCandidates.push(candidate);
+} else {
+  pc.addIceCandidate(candidate)
+    .catch((e) =>
+      console.warn("[call] addIceCandidate failed:", e)
+    );
     }
   } else if (evt.type === "call_reject" || evt.type === "call_end") {
     cleanup();
