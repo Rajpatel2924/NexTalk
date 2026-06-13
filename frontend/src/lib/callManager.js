@@ -84,11 +84,20 @@ function attachPCHandlers({ remoteUserId, callId }) {
   };
 
   pc.ontrack = (e) => {
-    console.log("[WebRTC] Remote track received");
+  console.log(
+    "[WebRTC] Track received:",
+    e.track.kind
+  );
 
-    const [stream] = e.streams;
-    useCall.getState().setRemoteStream(stream);
-  };
+  const [stream] = e.streams;
+
+  console.log(
+    "[WebRTC] Stream tracks:",
+    stream.getTracks()
+  );
+
+  useCall.getState().setRemoteStream(stream);
+};
 
   pc.oniceconnectionstatechange = () => {
     console.log(
