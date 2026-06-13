@@ -91,6 +91,14 @@ function attachPCHandlers({ remoteUserId, callId }) {
 
   const [stream] = e.streams;
 
+stream.getVideoTracks().forEach(track => {
+  console.log(
+    "[REMOTE VIDEO TRACK]",
+    track.enabled,
+    track.readyState
+  );
+});
+
   console.log(
   "[WebRTC] Stream tracks:",
   stream.getTracks().map((t) => ({
@@ -333,6 +341,9 @@ export function handleCallEvent(evt) {
   pc.setRemoteDescription(evt.sdp)
     .then(() => {
       console.log("[WebRTC] Remote description set");
+    if (pc.connectionState === "connected") {
+        state.setConnected();
+      }
     })
     .catch((e) => {
       console.warn(
