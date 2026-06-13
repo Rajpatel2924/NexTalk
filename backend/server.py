@@ -178,13 +178,45 @@ async def change_password(payload: ChangePasswordIn, user_id: str = Depends(get_
 @api.get("/users/search")
 async def search_users(q: str = "", user_id: str = Depends(get_current_user_id)):
     q = (q or "").strip()
-    query = {"id": {"$ne": user_id}}
+
+    # If user is searching, search entire database except self
     if q:
-        query["$or"] = [
-            {"name": {"$regex": q, "$options": "i"}},
-            {"email": {"$regex": q, "$options": "i"}},
-        ]
-    docs = await db.users.find(query, {"_id": 0, "password": 0}).limit(30).to_list(30)
+        query = {
+            "id": {"$ne": user_id},
+            "$or": [
+                {"name": {"$regex": q, "$options": "i"}},
+                {"email": {"$regex": q, "$options": "i"}},
+            ],
+        }
+
+        docs = await db.users.find(
+            query,
+            {"_id": 0, "password": 0}
+        ).limit(30).to_list(30)
+
+        return [public_user(d) for d in docs]
+
+    # No search text -> show only existing contacts
+    conversations = await db.conversations.find(
+        {"participantIds": user_id},
+        {"participantIds": 1}
+    ).to_list(500)
+
+    contact_ids = set()
+
+    for conv in conversations:
+        for pid in conv.get("participantIds", []):
+            if pid != user_id:
+                contact_ids.add(pid)
+
+    if not contact_ids:
+        return []
+
+    docs = await db.users.find(
+        {"id": {"$in": list(contact_ids)}},
+        {"_id": 0, "password": 0}
+    ).to_list(100)
+
     return [public_user(d) for d in docs]
 
 
